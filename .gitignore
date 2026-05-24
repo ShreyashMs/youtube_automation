@@ -29,4 +29,6 @@ dist/
 *.log
 
 # Jupyter
-.ipynb_checkpoints/
+.ipynb_checkpoints/client_secret.json
+token.pickle
+*.onnx
