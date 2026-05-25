@@ -6,52 +6,63 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+SCOPES = [
+    "https://www.googleapis.com/auth/youtube.upload"
+]
 
-def upload_video():
+def upload_video(
+    title,
+    description,
+    video_path="output/final_short.mp4"
+):
 
     creds = None
 
-    # Load saved token
+    # LOAD SAVED TOKEN
     if os.path.exists("token.pickle"):
+
         with open("token.pickle", "rb") as token:
             creds = pickle.load(token)
 
-    # First-time login
+    # LOGIN IF NEEDED
     if not creds or not creds.valid:
 
         if creds and creds.expired and creds.refresh_token:
+
             creds.refresh(Request())
 
         else:
+
             flow = InstalledAppFlow.from_client_secrets_file(
                 "client_secret.json",
                 SCOPES
             )
 
-            creds = flow.run_local_server(port=8080)
+            creds = flow.run_local_server(
+                port=8080
+            )
 
-        # Save token
+        # SAVE TOKEN
         with open("token.pickle", "wb") as token:
             pickle.dump(creds, token)
 
-    youtube = build("youtube", "v3", credentials=creds)
+    youtube = build(
+        "youtube",
+        "v3",
+        credentials=creds
+    )
 
     request = youtube.videos().insert(
+
         part="snippet,status",
+
         body={
+
             "snippet": {
-                "title": "महाभारत का सबसे बड़ा रहस्य 😱 #shorts",
 
-                "description": """
-भारत के रहस्यमयी इतिहास की ऐसी और कहानियों के लिए चैनल RamLala10 ko subscribe करें।
+                "title": title,
 
-#महाभारत
-#रामायण
-#इतिहास
-#mythology
-#shorts
-                """,
+                "description": description,
 
                 "tags": [
                     "महाभारत",
@@ -67,13 +78,15 @@ def upload_video():
             },
 
             "status": {
+
                 "privacyStatus": "public",
+
                 "selfDeclaredMadeForKids": False
             }
         },
 
         media_body=MediaFileUpload(
-            "output/final_short.mp4",
+            video_path,
             chunksize=-1,
             resumable=True
         )
