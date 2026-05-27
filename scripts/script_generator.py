@@ -115,7 +115,7 @@ CTA:
     response = requests.post(
         "http://localhost:11434/api/generate",
         json={
-            "model": "llama3",
+            "model": "gemma3:12b",
             "prompt": PROMPT,
             "stream": False,
             "options": {
