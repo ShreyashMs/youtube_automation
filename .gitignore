@@ -32,3 +32,18 @@ dist/
 .ipynb_checkpoints/client_secret.json
 token.pickle
 *.onnx
+
+# Generated output and temporary media
+output/
+assets/footage/
+assets/audio/
+
+# Generated pipeline files
+script.txt
+raw_script.txt
+video_metadata.txt
+token.pickle
+
+# Common generated media files
+*.mp4
+*.wav
