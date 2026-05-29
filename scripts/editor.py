@@ -237,7 +237,9 @@ def create_video():
 
     print("\nGenerating subtitles...")
 
-    subtitle_segments = generate_subtitles()
+    subtitle_segments = generate_subtitles(
+    narration.duration
+    )
 
     subtitles = []
 
@@ -261,11 +263,15 @@ def create_video():
     # SUBTITLE STYLE
     # ---------------------------------------------------
 
+    # ---------------------------------------------------
+    # SUBTITLE STYLE
+    # ---------------------------------------------------
+
     generator = lambda txt: TextClip(
 
         txt,
 
-        fontsize=70,
+        fontsize=80,
 
         font=FONT_PATH,
 
@@ -287,12 +293,12 @@ def create_video():
     # ---------------------------------------------------
 
     subtitle_clips = SubtitlesClip(
-        subtitles,
-        generator
+    subtitles,
+    generator
     )
 
     subtitle_clips = subtitle_clips.set_position(
-        ("center", 1450)
+    ("center", 1400)
     )
 
     # ---------------------------------------------------
