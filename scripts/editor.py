@@ -1,7 +1,10 @@
 from PIL import Image
 
-# Pillow fix
-if not hasattr(Image, 'ANTIALIAS'):
+# ---------------------------------------------------
+# PILLOW FIX
+# ---------------------------------------------------
+
+if not hasattr(Image, "ANTIALIAS"):
     Image.ANTIALIAS = Image.Resampling.LANCZOS
 
 from moviepy.editor import *
@@ -13,7 +16,7 @@ import os
 import random
 
 # ---------------------------------------------------
-# FONT PATH
+# FONT
 # ---------------------------------------------------
 
 FONT_PATH = "assets/fonts/NotoSansDevanagari-Regular.ttf"
@@ -24,7 +27,7 @@ FONT_PATH = "assets/fonts/NotoSansDevanagari-Regular.ttf"
 
 def choose_bgm(script_text):
 
-    # Sometimes no BGM for variation
+    # Randomly disable BGM sometimes
     if random.random() < 0.20:
         return None
 
@@ -80,8 +83,11 @@ def create_video():
     footage_folder = "assets/footage"
 
     video_files = [
+
         f"{footage_folder}/{file}"
+
         for file in os.listdir(footage_folder)
+
         if file.endswith(".mp4")
     ]
 
@@ -116,7 +122,7 @@ def create_video():
 
             clip = VideoFileClip(file)
 
-            # Random subclip
+            # Random clip section
             if clip.duration > clip_duration:
 
                 start = random.uniform(
@@ -135,7 +141,7 @@ def create_video():
                     duration=clip_duration
                 )
 
-            # Resize for vertical
+            # Resize for vertical shorts
             clip = clip.resize(height=1920)
 
             if clip.w < 1080:
@@ -149,7 +155,7 @@ def create_video():
                 height=1920
             )
 
-            # Smooth fade
+            # Smooth fades
             clip = (
                 clip
                 .fadein(0.3)
@@ -160,7 +166,7 @@ def create_video():
 
         except Exception as e:
 
-            print(f"Error processing: {file}")
+            print(f"\nError processing: {file}")
             print(e)
 
     # ---------------------------------------------------
@@ -220,6 +226,7 @@ def create_video():
 
         final_audio = narration
 
+    # Set final audio
     final_video = final_video.set_audio(
         final_audio
     )
@@ -247,20 +254,37 @@ def create_video():
             )
         )
 
+    print("\nSample subtitles:")
+    print(subtitles[:3])
+
     # ---------------------------------------------------
     # SUBTITLE STYLE
     # ---------------------------------------------------
 
     generator = lambda txt: TextClip(
+
         txt,
-        fontsize=72,
+
+        fontsize=70,
+
         font=FONT_PATH,
+
         color="white",
+
         stroke_color="black",
-        stroke_width=4,
+
+        stroke_width=5,
+
         method="caption",
-        size=(850, 200)
+
+        align="center",
+
+        size=(950, None)
     )
+
+    # ---------------------------------------------------
+    # CREATE SUBTITLE CLIPS
+    # ---------------------------------------------------
 
     subtitle_clips = SubtitlesClip(
         subtitles,
@@ -272,7 +296,7 @@ def create_video():
     )
 
     # ---------------------------------------------------
-    # ADD SUBTITLES TO VIDEO
+    # OVERLAY SUBTITLES
     # ---------------------------------------------------
 
     final_video = CompositeVideoClip([
@@ -290,13 +314,21 @@ def create_video():
     )
 
     final_video.write_videofile(
+
         "output/final_short.mp4",
+
         codec="libx264",
+
         audio_codec="aac",
+
         temp_audiofile="temp-audio.m4a",
+
         remove_temp=True,
+
         fps=30,
+
         threads=4,
+
         preset="medium"
     )
 

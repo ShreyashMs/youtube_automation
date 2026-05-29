@@ -1,47 +1,45 @@
 import whisper
-import ssl
+import re
 
-# ----------------------------------------
-# FIX SSL ISSUE (macOS Python)
-# ----------------------------------------
+# ---------------------------------------------------
+# CLEAN HINDI TEXT
+# ---------------------------------------------------
 
-ssl._create_default_https_context = (
-    ssl._create_unverified_context
-)
+def clean_text(text):
 
-# ----------------------------------------
-# LOAD WHISPER MODEL ONCE
-# ----------------------------------------
+    text = text.strip()
 
-model = whisper.load_model("base")
+    # remove weird symbols
+    text = re.sub(r'\s+', ' ', text)
 
-# ----------------------------------------
+    return text
+
+
+# ---------------------------------------------------
 # GENERATE SUBTITLES
-# ----------------------------------------
+# ---------------------------------------------------
 
 def generate_subtitles():
+
+    model = whisper.load_model("base")
 
     result = model.transcribe(
         "assets/audio/narration.wav",
         language="hi",
-        fp16=False
+        task="transcribe"
     )
 
-    return result["segments"]
+    subtitles = []
 
+    for segment in result["segments"]:
 
-# ----------------------------------------
-# TEST
-# ----------------------------------------
+        subtitles.append({
 
-if __name__ == "__main__":
+            "start": segment["start"],
 
-    subtitles = generate_subtitles()
+            "end": segment["end"],
 
-    for segment in subtitles:
+            "text": clean_text(segment["text"])
+        })
 
-        print(
-            f"[{segment['start']:.2f} - "
-            f"{segment['end']:.2f}] "
-            f"{segment['text']}"
-        )
+    return subtitles

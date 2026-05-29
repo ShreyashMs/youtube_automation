@@ -5,11 +5,15 @@ from scripts.fetch_footage import fetch_footage
 from scripts.editor import create_video
 from scripts.youtube_uploader import upload_video
 
-import re
 import random
+import os
 
+# ---------------------------------------------------
 # RANDOM FOOTAGE SEARCHES
+# ---------------------------------------------------
+
 FOOTAGE_QUERIES = [
+
     "ancient india",
     "hindu temple",
     "mahabharat art",
@@ -22,78 +26,113 @@ FOOTAGE_QUERIES = [
     "mystic india"
 ]
 
-print("Generating script...")
+# ---------------------------------------------------
+# GENERATE SCRIPT
+# ---------------------------------------------------
 
-response = generate_script()
+print("\nGenerating script...\n")
 
-# SAVE RAW RESPONSE
-with open("raw_script.txt", "w", encoding="utf-8") as f:
-    f.write(response)
+script = generate_script()
 
-# CLEAN MARKDOWN
-response = response.replace("**", "")
+# Safety check
+if not script or len(script.strip()) == 0:
 
-# EXTRACT HOOK
-hook_match = re.search(
-    r"HOOK:\s*(.*?)\s*SCRIPT:",
-    response,
-    re.DOTALL
-)
+    raise ValueError(
+        "Generated script is empty"
+    )
 
-# EXTRACT SCRIPT
-script_match = re.search(
-    r"SCRIPT:\s*(.*?)\s*CTA:",
-    response,
-    re.DOTALL
-)
-
-# EXTRACT CTA
-cta_match = re.search(
-    r"CTA:\s*(.*)",
-    response,
-    re.DOTALL
-)
-
-hook = hook_match.group(1).strip() if hook_match else ""
-
-script = (
-    script_match.group(1).strip()
-    if script_match else ""
-)
-
-cta = (
-    cta_match.group(1).strip()
-    if cta_match else ""
-)
-
-# KEEP ONLY FIRST CTA LINE
-cta = cta.split("\n")[0].strip()
-
-# FINAL NARRATION
-final_script = f"{hook}\n\n{script}\n\n{cta}"
-
+# ---------------------------------------------------
 # SAVE SCRIPT
-with open("script.txt", "w", encoding="utf-8") as f:
-    f.write(final_script)
+# ---------------------------------------------------
+
+with open(
+    "script.txt",
+    "w",
+    encoding="utf-8"
+) as f:
+
+    f.write(script.strip())
 
 print("\nFINAL SCRIPT:\n")
-print(final_script)
+print(script)
 
-# GENERATE TITLE + DESCRIPTION + TAGS
-print("\nGenerating metadata...")
+# ---------------------------------------------------
+# GENERATE METADATA
+# ---------------------------------------------------
 
-metadata = generate_metadata(final_script)
+print("\nGenerating metadata...\n")
 
-title = metadata["title"]
-description = metadata["description"]
-hashtags = metadata["hashtags"]
+try:
 
-# FINAL DESCRIPTION
+    metadata = generate_metadata(script)
+
+    title = metadata.get(
+        "title",
+        "पौराणिक रहस्य"
+    )
+
+    description = metadata.get(
+        "description",
+        "ऐसी और कहानियों के लिए रामलला१० को फॉलो करें।"
+    )
+
+    hashtags = metadata.get(
+        "hashtags",
+        "#shorts #hindi #mythology"
+    )
+
+except Exception as e:
+
+    print(
+        "\nMetadata generation failed"
+    )
+
+    print(e)
+
+    title = "पौराणिक रहस्य"
+
+    description = (
+        "ऐसी और कहानियों के लिए "
+        "रामलला१० को फॉलो करें।"
+    )
+
+    hashtags = (
+        "#shorts #hindi #mythology"
+    )
+
+# ---------------------------------------------------
+# CLEAN METADATA
+# ---------------------------------------------------
+
+title = (
+    title
+    .replace("**", "")
+    .replace('"', "")
+    .strip()
+)
+
+description = (
+    description
+    .replace("**", "")
+    .replace('"', "")
+    .strip()
+)
+
+hashtags = (
+    hashtags
+    .replace("**", "")
+    .replace('"', "")
+    .strip()
+)
+
 full_description = (
     f"{description}\n\n{hashtags}"
 )
 
+# ---------------------------------------------------
 # SAVE METADATA
+# ---------------------------------------------------
+
 with open(
     "video_metadata.txt",
     "w",
@@ -112,28 +151,104 @@ print(title)
 print("\nDESCRIPTION:\n")
 print(full_description)
 
-# RANDOM FOOTAGE SEARCH
-query = random.choice(FOOTAGE_QUERIES)
+# ---------------------------------------------------
+# FETCH FOOTAGE
+# ---------------------------------------------------
+
+query = random.choice(
+    FOOTAGE_QUERIES
+)
 
 print("\nFetching footage...")
 print(f"Using query: {query}")
 
 fetch_footage(query)
 
+# ---------------------------------------------------
+# VERIFY SCRIPT FILE
+# ---------------------------------------------------
+
+if not os.path.exists("script.txt"):
+
+    raise FileNotFoundError(
+        "script.txt not found"
+    )
+
+with open(
+    "script.txt",
+    "r",
+    encoding="utf-8"
+) as f:
+
+    saved_script = f.read().strip()
+
+if len(saved_script) == 0:
+
+    raise ValueError(
+        "script.txt is empty"
+    )
+
+print("\nSCRIPT FILE VERIFIED\n")
+
+# ---------------------------------------------------
 # GENERATE VOICE
+# ---------------------------------------------------
+
 print("\nGenerating Hindi voice...")
+
 generate_voice()
 
+print("\nVoice generated successfully!")
+
+# ---------------------------------------------------
 # CREATE VIDEO
+# ---------------------------------------------------
+
 print("\nCreating final short...")
+
 create_video()
 
-# UPLOAD TO YOUTUBE
-print("\nUploading to YouTube...")
+# ---------------------------------------------------
+# VERIFY VIDEO
+# ---------------------------------------------------
 
-upload_video(
-    title=title,
-    description=full_description
+if not os.path.exists(
+    "output/final_short.mp4"
+):
+
+    raise FileNotFoundError(
+        "Final video not created"
+    )
+
+print(
+    "\nFinal video exported successfully!"
 )
 
-print("\nPipeline completed successfully!")
+# ---------------------------------------------------
+# UPLOAD TO YOUTUBE
+# ---------------------------------------------------
+
+print("\nUploading to YouTube...")
+
+try:
+
+    upload_video(
+        title=title,
+        description=full_description
+    )
+
+    print(
+        "\nVideo uploaded successfully!"
+    )
+
+except Exception as e:
+
+    print(
+        "\nUpload failed:"
+    )
+
+    print(e)
+
+print(
+    "\nPipeline completed successfully!"
+)
