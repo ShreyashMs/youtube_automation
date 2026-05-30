@@ -5,26 +5,106 @@ from scripts.fetch_footage import fetch_footage
 from scripts.editor import create_video
 from scripts.youtube_uploader import upload_video
 
-import random
 import os
+import random
 
 # ---------------------------------------------------
-# RANDOM FOOTAGE SEARCHES
+# FOOTAGE QUERIES
 # ---------------------------------------------------
 
-FOOTAGE_QUERIES = [
+FOOTAGE_QUERIES = {
 
-    "ancient india",
-    "hindu temple",
-    "mahabharat art",
-    "epic war",
-    "cinematic temple",
-    "indian history",
-    "shiva statue",
-    "ramayan temple",
-    "ancient ruins",
-    "mystic india"
-]
+    "राम": [
+        "ram temple",
+        "lord rama statue",
+        "ramayan cinematic",
+        "ancient india temple",
+        "ram ji art"
+    ],
+
+    "हनुमान": [
+        "hanuman statue",
+        "hanuman cinematic",
+        "hanuman temple",
+        "epic monkey warrior",
+        "hanuman art"
+    ],
+
+    "शिव": [
+        "shiva statue",
+        "mahakal temple",
+        "shivling",
+        "shiva cinematic",
+        "kedarnath temple"
+    ],
+
+    "कृष्ण": [
+        "krishna temple",
+        "krishna flute",
+        "vrindavan temple",
+        "krishna cinematic",
+        "bhagavad gita art"
+    ],
+
+    "विष्णु": [
+        "vishnu statue",
+        "lord vishnu art",
+        "ancient temple india",
+        "vishnu cinematic"
+    ],
+
+    "दुर्गा": [
+        "durga maa",
+        "navratri cinematic",
+        "durga temple",
+        "maa durga statue"
+    ],
+
+    "गणेश": [
+        "ganesh statue",
+        "ganpati temple",
+        "ganesh cinematic",
+        "ganpati bappa"
+    ],
+
+    "रावण": [
+        "ravan art",
+        "ramayan war",
+        "epic war cinematic",
+        "lanka cinematic"
+    ],
+
+    "महाभारत": [
+        "mahabharat art",
+        "kurukshetra war",
+        "epic indian war",
+        "bhishma art"
+    ],
+
+    "DEFAULT": [
+        "ancient india",
+        "hindu temple",
+        "cinematic temple",
+        "mystic india",
+        "ancient ruins"
+    ]
+}
+
+# ---------------------------------------------------
+# DETECT FOOTAGE QUERY
+# ---------------------------------------------------
+
+def get_footage_query(script):
+
+    for keyword, queries in FOOTAGE_QUERIES.items():
+
+        if keyword in script:
+
+            return random.choice(queries)
+
+    return random.choice(
+        FOOTAGE_QUERIES["DEFAULT"]
+    )
 
 # ---------------------------------------------------
 # GENERATE SCRIPT
@@ -78,15 +158,12 @@ try:
 
     hashtags = metadata.get(
         "hashtags",
-        "#shorts #hindi #mythology"
+        "#राम #महाभारत #पौराणिककथा"
     )
 
 except Exception as e:
 
-    print(
-        "\nMetadata generation failed"
-    )
-
+    print("\nMetadata generation failed")
     print(e)
 
     title = "पौराणिक रहस्य"
@@ -97,7 +174,7 @@ except Exception as e:
     )
 
     hashtags = (
-        "#shorts #hindi #mythology"
+        "#राम #महाभारत #पौराणिककथा"
     )
 
 # ---------------------------------------------------
@@ -155,9 +232,7 @@ print(full_description)
 # FETCH FOOTAGE
 # ---------------------------------------------------
 
-query = random.choice(
-    FOOTAGE_QUERIES
-)
+query = get_footage_query(script)
 
 print("\nFetching footage...")
 print(f"Using query: {query}")
@@ -243,10 +318,7 @@ try:
 
 except Exception as e:
 
-    print(
-        "\nUpload failed:"
-    )
-
+    print("\nUpload failed:")
     print(e)
 
 print(
