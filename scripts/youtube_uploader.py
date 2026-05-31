@@ -3,6 +3,10 @@ import pickle
 import re
 import time
 
+from googleapiclient.errors import (
+    HttpError
+)
+
 from google_auth_oauthlib.flow import (
     InstalledAppFlow
 )
@@ -19,6 +23,10 @@ from googleapiclient.http import (
     MediaFileUpload
 )
 
+# ---------------------------------------------------
+# CONFIG
+# ---------------------------------------------------
+
 SCOPES = [
     "https://www.googleapis.com/auth/youtube.upload"
 ]
@@ -27,7 +35,9 @@ TOKEN_FILE = "token.pickle"
 
 CLIENT_SECRET_FILE = "client_secret.json"
 
-DEFAULT_VIDEO_PATH = "output/final_short.mp4"
+DEFAULT_VIDEO_PATH = (
+    "output/final_short.mp4"
+)
 
 DEFAULT_TAGS = [
 
@@ -41,6 +51,10 @@ DEFAULT_TAGS = [
     "shorts",
 ]
 
+# ---------------------------------------------------
+# CLEAN TITLE
+# ---------------------------------------------------
+
 def clean_title(title):
 
     title = title.strip()
@@ -52,9 +66,14 @@ def clean_title(title):
     )
 
     if "#shorts" not in title.lower():
+
         title += " #shorts"
 
     return title[:100]
+
+# ---------------------------------------------------
+# AUTHENTICATE
+# ---------------------------------------------------
 
 def authenticate_youtube():
 
@@ -108,6 +127,10 @@ def authenticate_youtube():
 
     return youtube
 
+# ---------------------------------------------------
+# UPLOAD VIDEO
+# ---------------------------------------------------
+
 def upload_video(
 
     title,
@@ -130,6 +153,7 @@ def upload_video(
     title = clean_title(title)
 
     if not tags:
+
         tags = DEFAULT_TAGS
 
     request = youtube.videos().insert(
@@ -203,3 +227,49 @@ def upload_video(
 
         "video_url": video_url
     }
+
+# ---------------------------------------------------
+# POST COMMENT
+# ---------------------------------------------------
+
+def post_comment(
+
+    video_id,
+
+    comment_text
+):
+
+    try:
+
+        youtube = authenticate_youtube()
+
+        youtube.commentThreads().insert(
+
+            part="snippet",
+
+            body={
+
+                "snippet": {
+
+                    "videoId": video_id,
+
+                    "topLevelComment": {
+
+                        "snippet": {
+
+                            "textOriginal": comment_text
+                        }
+                    }
+                }
+            }
+
+        ).execute()
+
+        print("\nComment posted successfully!")
+
+    except HttpError as e:
+
+        print("\nComment posting failed")
+
+        print(e)
+

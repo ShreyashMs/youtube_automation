@@ -7,7 +7,6 @@ from scripts.metadata_generator import generate_metadata
 from scripts.tts_generator import generate_voice
 from scripts.fetch_footage import fetch_footage
 from scripts.editor import create_video
-from scripts.youtube_uploader import upload_video
 
 from scripts.thumbnail_generator import (
     create_thumbnail
@@ -15,6 +14,15 @@ from scripts.thumbnail_generator import (
 
 from scripts.analytics_tracker import (
     save_video_data
+)
+
+from scripts.comment_generator import (
+    generate_comment
+)
+
+from scripts.youtube_uploader import (
+    upload_video,
+    post_comment
 )
 
 # ---------------------------------------------------
@@ -124,16 +132,6 @@ def run_pipeline():
         )
     )
 
-    hashtags = clean_text(
-
-        metadata.get(
-
-            "hashtags",
-
-            "#राम #महाभारत"
-        )
-    )
-
     full_description = description
 
     print("\nTITLE:\n")
@@ -229,6 +227,23 @@ def run_pipeline():
     )
 
     print("\nVideo uploaded successfully!")
+
+    # ---------------------------------------------------
+    # GENERATE & POST COMMENT
+    # ---------------------------------------------------
+
+    print("\nGenerating comment...\n")
+
+    comment = generate_comment(script)
+
+    print("\nPosting comment...\n")
+
+    post_comment(
+
+        video_id=upload_result["video_id"],
+
+        comment_text=comment
+    )
 
     # ---------------------------------------------------
     # SAVE ANALYTICS
