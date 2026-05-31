@@ -2,140 +2,85 @@ import json
 import os
 from datetime import datetime
 
-# ---------------------------------------------------
-
-# ANALYTICS FILE
-
-# ---------------------------------------------------
-
 ANALYTICS_FILE = "analytics.json"
 
-# ---------------------------------------------------
+def load_data():
 
-# LOAD ANALYTICS
+    if not os.path.exists(
+        ANALYTICS_FILE
+    ):
 
-# ---------------------------------------------------
+        return []
 
-def load_analytics():
+    try:
 
+        with open(
+            ANALYTICS_FILE,
+            "r",
+            encoding="utf-8"
+        ) as f:
 
-if not os.path.exists(
-    ANALYTICS_FILE
+            return json.load(f)
+
+    except:
+        return []
+
+def save_video_data(
+
+    title,
+
+    topic,
+
+    video_id,
+
+    video_url
 ):
 
-    return []
+    data = load_data()
 
-try:
+    entry = {
+
+        "title": title,
+
+        "topic": topic,
+
+        "video_id": video_id,
+
+        "video_url": video_url,
+
+        "uploaded_at": str(
+            datetime.now()
+        )
+    }
+
+    data.append(entry)
 
     with open(
         ANALYTICS_FILE,
-        "r",
+        "w",
         encoding="utf-8"
     ) as f:
 
-        return json.load(f)
+        json.dump(
+            data,
+            f,
+            ensure_ascii=False,
+            indent=2
+        )
 
-except:
-
-    return []
-
-
-# ---------------------------------------------------
-
-# SAVE ANALYTICS
-
-# ---------------------------------------------------
-
-def save_analytics(data):
-
-
-with open(
-    ANALYTICS_FILE,
-    "w",
-    encoding="utf-8"
-) as f:
-
-    json.dump(
-        data,
-        f,
-        ensure_ascii=False,
-        indent=4
+    print(
+        "\nAnalytics saved successfully"
     )
 
+if __name__ == "__main__":
 
-# ---------------------------------------------------
+    save_video_data(
 
-# TRACK VIDEO
+        "हनुमानजी की शक्ति",
 
-# ---------------------------------------------------
+        "हनुमान",
 
-def track_video(
+        "abc123",
 
-
-topic,
-title,
-video_id="",
-duration=0
-
-
-):
-
-
-analytics = load_analytics()
-
-entry = {
-
-    "topic": topic,
-
-    "title": title,
-
-    "video_id": video_id,
-
-    "duration": duration,
-
-    "uploaded_at": str(
-        datetime.now()
+        "https://youtube.com/shorts/abc123"
     )
-}
-
-analytics.append(entry)
-
-save_analytics(analytics)
-
-print("\nAnalytics updated")
-
-
-# ---------------------------------------------------
-
-# GET TOTAL VIDEOS
-
-# ---------------------------------------------------
-
-def get_total_videos():
-
-
-analytics = load_analytics()
-
-return len(analytics)
-
-
-# ---------------------------------------------------
-
-# MAIN
-
-# ---------------------------------------------------
-
-if **name** == "**main**":
-
-
-track_video(
-
-    topic="हनुमानजी अमर क्यों हैं",
-
-    title="हनुमानजी कभी मर क्यों नहीं सकते?"
-)
-
-print(
-    get_total_videos()
-)
-

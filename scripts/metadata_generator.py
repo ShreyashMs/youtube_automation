@@ -169,8 +169,8 @@ def clean_description(description):
 def clean_hashtags(text):
 
     hashtags = re.findall(
-        r"#\w+",
-        text
+    r"#[^\s#]+",
+    text
     )
 
     hashtags = list(dict.fromkeys(hashtags))

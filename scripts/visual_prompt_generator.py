@@ -1,126 +1,75 @@
-import random
+import re
 
-# ---------------------------------------------------
+VISUAL_MAP = {
 
-# VISUAL STYLES
+    "शिव": [
+        "cinematic shiva statue",
+        "mahakal temple drone",
+        "himalaya cinematic",
+    ],
 
-# ---------------------------------------------------
+    "हनुमान": [
+        "epic hanuman silhouette",
+        "mountain sunrise cinematic",
+        "flying clouds cinematic",
+    ],
 
-VISUAL_STYLES = {
+    "राम": [
+        "ram mandir drone",
+        "ancient india cinematic",
+        "forest cinematic",
+    ],
 
+    "कृष्ण": [
+        "krishna flute cinematic",
+        "vrindavan temple",
+        "peacock feather macro",
+    ],
 
-"शिव": [
+    "महाभारत": [
+        "epic war cinematic",
+        "battlefield drone",
+        "ancient warriors",
+    ],
 
-    "mahakal temple cinematic",
-    "shiva statue closeup",
-    "himalaya cinematic",
-    "meditation mountain",
-    "shivling dramatic lighting",
-    "ancient temple india",
-    "cinematic fire smoke",
-],
-
-"राम": [
-
-    "ram mandir cinematic",
-    "ancient india aerial",
-    "forest cinematic",
-    "epic warrior silhouette",
-    "indian temple sunset",
-    "ramayan atmosphere",
-],
-
-"हनुमान": [
-
-    "hanuman statue cinematic",
-    "sunrise sky dramatic",
-    "epic mountain cinematic",
-    "flying warrior silhouette",
-    "indian mythology cinematic",
-    "storm clouds dramatic",
-],
-
-"कृष्ण": [
-
-    "krishna flute cinematic",
-    "vrindavan temple",
-    "peacock feather macro",
-    "river sunset india",
-    "spiritual cinematic lighting",
-    "bhagavad gita aesthetic",
-],
-
-"महाभारत": [
-
-    "epic battlefield cinematic",
-    "ancient warriors",
-    "fire sparks slow motion",
-    "kurukshetra atmosphere",
-    "dark clouds battlefield",
-    "cinematic war scene",
-]
-
-
+    "रावण": [
+        "dark king cinematic",
+        "epic fire cinematic",
+        "fantasy fort",
+    ]
 }
-
-# ---------------------------------------------------
-
-# DEFAULT VISUALS
-
-# ---------------------------------------------------
 
 DEFAULT_VISUALS = [
 
-
-"ancient india cinematic",
-"hindu temple drone",
-"epic sky cinematic",
-"indian spirituality",
-"mystic cinematic visuals",
-
-
+    "ancient india cinematic",
+    "hindu temple drone",
+    "spiritual india",
+    "epic clouds cinematic",
 ]
-
-# ---------------------------------------------------
-
-# GENERATE VISUAL PROMPTS
-
-# ---------------------------------------------------
 
 def generate_visual_prompts(script):
 
+    prompts = []
 
-prompts = []
+    for keyword, visuals in VISUAL_MAP.items():
 
-for keyword, visuals in VISUAL_STYLES.items():
+        if keyword in script:
 
-    if keyword in script:
+            prompts.extend(visuals)
 
-        prompts.extend(visuals)
+    if not prompts:
 
-if not prompts:
+        prompts = DEFAULT_VISUALS
 
-    prompts = DEFAULT_VISUALS
+    prompts = list(set(prompts))
 
-random.shuffle(prompts)
+    return prompts
 
-return prompts[:6]
+if __name__ == "__main__":
 
+    sample = "हनुमानजी ने सूर्य को निगल लिया"
 
-# ---------------------------------------------------
+    result = generate_visual_prompts(sample)
 
-# MAIN
-
-# ---------------------------------------------------
-
-if **name** == "**main**":
-
-
-test_script = "हनुमानजी ने सूर्य को निगल लिया"
-
-print(
-    generate_visual_prompts(
-        test_script
-    )
-)
-
+    for r in result:
+        print(r)

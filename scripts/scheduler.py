@@ -1,74 +1,43 @@
 import time
 import schedule
-from datetime import datetime
-import subprocess
+import traceback
 
-# ---------------------------------------------------
+from main import run_pipeline
 
-# RUN PIPELINE
+UPLOAD_TIMES = [
 
-# ---------------------------------------------------
+    "08:00",
+    "13:00",
+    "19:00",
+    "22:00"
+]
 
-def run_pipeline():
+def safe_run():
 
+    try:
 
-print("\n--------------------------------")
-print("STARTING AUTOMATION PIPELINE")
-print("--------------------------------")
+        print("\nStarting scheduled upload...\n")
 
-print(
-    f"Time: {datetime.now()}"
-)
+        run_pipeline()
 
-try:
+    except Exception as e:
 
-    subprocess.run(
-        ["python", "main.py"],
-        check=True
-    )
+        print("\nScheduled upload failed")
 
-    print(
-        "\nPipeline completed successfully"
-    )
+        print(e)
 
-except Exception as e:
+        traceback.print_exc()
 
-    print("\nPipeline failed")
-    print(e)
+for upload_time in UPLOAD_TIMES:
 
+    schedule.every().day.at(
+        upload_time
+    ).do(safe_run)
 
-# ---------------------------------------------------
-
-# SCHEDULE TIMES
-
-# ---------------------------------------------------
-
-# Best Shorts timings (India)
-
-schedule.every().day.at(
-"07:00"
-).do(run_pipeline)
-
-schedule.every().day.at(
-"13:00"
-).do(run_pipeline)
-
-schedule.every().day.at(
-"19:00"
-).do(run_pipeline)
-
-# ---------------------------------------------------
-
-# LOOP
-
-# ---------------------------------------------------
-
-print("\nScheduler started...")
+print("\nScheduler started...\n")
 
 while True:
 
+    schedule.run_pending()
 
-schedule.run_pending()
-
-time.sleep(10)
-
+    time.sleep(20)

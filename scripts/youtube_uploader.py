@@ -189,11 +189,17 @@ def upload_video(
 
     video_id = response.get("id")
 
-    print("\nUPLOAD SUCCESSFUL")
-
-    print(
+    video_url = (
         f"https://youtube.com/shorts/{video_id}"
     )
 
-    return video_id
+    print("\nUPLOAD SUCCESSFUL")
 
+    print(video_url)
+
+    return {
+
+        "video_id": video_id,
+
+        "video_url": video_url
+    }

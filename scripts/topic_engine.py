@@ -1,146 +1,134 @@
 import random
+import json
+import os
 from datetime import datetime
 
-# ---------------------------------------------------
+USED_TOPICS_FILE = "used_topics.json"
 
-# CATEGORY TOPICS
+DAY_TOPICS = {
 
-# ---------------------------------------------------
+    "Monday": [
+        "शिवजी ने विष क्यों पिया",
+        "महाकाल का रहस्य",
+        "कैलाश पर्वत का रहस्य",
+        "नंदी की शक्ति",
+        "शिवजी का तीसरा नेत्र",
+    ],
 
-TOPIC_CATEGORIES = {
+    "Tuesday": [
+        "हनुमानजी ने सूर्य को क्यों निगला",
+        "हनुमानजी अमर क्यों हैं",
+        "हनुमानजी और शनिदेव",
+        "लंका दहन",
+        "संजीवनी बूटी",
+    ],
 
+    "Wednesday": [
+        "गणेशजी और महाभारत",
+        "गणेशजी का टूटा दांत",
+        "गणपति बप्पा का रहस्य",
+        "गणेशजी और कुबेर",
+        "गणेशजी की बुद्धि",
+    ],
 
-"shiv": [
+    "Thursday": [
+        "समुद्र मंथन",
+        "नरसिंह अवतार",
+        "वामन अवतार",
+        "गरुड़ की शक्ति",
+        "विष्णुजी की माया",
+    ],
 
-    "शिवजी ने विष क्यों पिया",
-    "महाकाल का रहस्य",
-    "कैलाश पर्वत का रहस्य",
-    "शिवजी का तांडव",
-    "काल भैरव की शक्ति",
-    "शिवजी और गंगा",
-],
+    "Friday": [
+        "मां लक्ष्मी का रहस्य",
+        "धनतेरस की कथा",
+        "श्री यंत्र का रहस्य",
+        "महालक्ष्मी व्रत",
+        "दीपावली की कथा",
+    ],
 
-"ram": [
+    "Saturday": [
+        "शनिदेव का न्याय",
+        "शनि साढ़ेसाती",
+        "शनिदेव और हनुमानजी",
+        "शनि मंदिर का रहस्य",
+        "शनिदेव का क्रोध",
+    ],
 
-    "रामजी का वनवास",
-    "रामसेतु का रहस्य",
-    "रामजी और विभीषण",
-    "रामराज्य",
-    "रामजी और हनुमानजी",
-],
-
-"hanuman": [
-
-    "हनुमानजी अमर क्यों हैं",
-    "हनुमानजी और शनिदेव",
-    "हनुमानजी ने सूर्य को क्यों निगला",
-    "हनुमानजी और भीम",
-    "हनुमानजी की असली शक्ति",
-],
-
-"krishna": [
-
-    "श्रीकृष्ण और सुदामा",
-    "गोवर्धन पर्वत का रहस्य",
-    "कृष्णजी की बांसुरी",
-    "कालिया नाग की कथा",
-    "श्रीकृष्ण और अर्जुन",
-],
-
-"mahabharat": [
-
-    "कर्ण का सबसे बड़ा रहस्य",
-    "भीष्म पितामह का वरदान",
-    "द्रौपदी का चीरहरण",
-    "अश्वत्थामा अमर क्यों हैं",
-    "महाभारत का सबसे बड़ा श्राप",
-]
-
-
+    "Sunday": [
+        "रामसेतु का रहस्य",
+        "रामजी और हनुमानजी",
+        "रामराज्य",
+        "सूर्यदेव और कर्ण",
+        "अयोध्या का रहस्य",
+    ]
 }
 
-# ---------------------------------------------------
+def load_used_topics():
 
-# DAY CATEGORY MAP
+    if not os.path.exists(USED_TOPICS_FILE):
+        return []
 
-# ---------------------------------------------------
+    try:
 
-DAY_MAPPING = {
+        with open(
+            USED_TOPICS_FILE,
+            "r",
+            encoding="utf-8"
+        ) as f:
 
+            return json.load(f)
 
-"Monday": "shiv",
-"Tuesday": "hanuman",
-"Wednesday": "krishna",
-"Thursday": "krishna",
-"Friday": "ram",
-"Saturday": "hanuman",
-"Sunday": "ram"
+    except:
+        return []
 
+def save_used_topic(topic):
 
-}
+    used = load_used_topics()
 
-# ---------------------------------------------------
+    used.append(topic)
 
-# GET CATEGORY
+    used = used[-100:]
 
-# ---------------------------------------------------
+    with open(
+        USED_TOPICS_FILE,
+        "w",
+        encoding="utf-8"
+    ) as f:
 
-def get_today_category():
+        json.dump(
+            used,
+            f,
+            ensure_ascii=False,
+            indent=2
+        )
 
+def get_topic():
 
-today = datetime.today().strftime("%A")
+    today = datetime.today().strftime("%A")
 
-return DAY_MAPPING.get(
-    today,
-    "shiv"
-)
+    if today not in DAY_TOPICS:
+        today = "Monday"
 
+    topics = DAY_TOPICS[today]
 
-# ---------------------------------------------------
+    used = load_used_topics()
 
-# GET TOPIC
+    fresh = [
 
-# ---------------------------------------------------
+        t for t in topics
+        if t not in used
+    ]
 
-def get_today_topic():
+    if not fresh:
+        fresh = topics
 
+    topic = random.choice(fresh)
 
-category = get_today_category()
+    save_used_topic(topic)
 
-topics = TOPIC_CATEGORIES.get(
-    category,
-    []
-)
+    return topic
 
-return random.choice(topics)
+if __name__ == "__main__":
 
-
-# ---------------------------------------------------
-
-# GET RANDOM VIRAL TOPIC
-
-# ---------------------------------------------------
-
-def get_random_viral_topic():
-
-
-all_topics = []
-
-for topics in TOPIC_CATEGORIES.values():
-
-    all_topics.extend(topics)
-
-return random.choice(all_topics)
-
-
-# ---------------------------------------------------
-
-# MAIN
-
-# ---------------------------------------------------
-
-if **name** == "**main**":
-
-
-print(get_today_topic())
-
+    print(get_topic())
