@@ -6,10 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ---------------------------------------------------
-# API
-# ---------------------------------------------------
-
 API_KEY = os.getenv("PEXELS_API_KEY")
 
 HEADERS = {
@@ -21,130 +17,141 @@ DOWNLOAD_FOLDER = "assets/footage"
 USED_VIDEO_IDS = set()
 
 # ---------------------------------------------------
-# TOPIC → VISUAL QUERIES
+# VISUAL MAPPINGS
 # ---------------------------------------------------
 
 VISUAL_MAPPINGS = {
 
     "शिव": [
-
-        "shiva statue",
-        "mahakal temple",
+        "shiva statue cinematic",
+        "mahakal temple drone",
+        "shivling close up",
         "himalaya cinematic",
-        "ancient temple india",
-        "meditation mountain",
-        "shivling",
-        "lord shiva art",
-        "hindu temple cinematic",
+        "dark temple cinematic",
     ],
 
     "राम": [
-
-        "ram mandir",
+        "ram mandir drone",
         "ancient india cinematic",
-        "indian temple drone",
-        "epic warrior",
+        "epic warrior silhouette",
         "forest cinematic",
-        "indian mythology art",
         "ayodhya temple",
     ],
 
     "हनुमान": [
-
-        "hanuman statue",
+        "hanuman statue cinematic",
         "epic sky cinematic",
-        "indian warrior cinematic",
         "mountain cinematic",
-        "sunrise india temple",
-        "devotional india",
+        "fire cinematic",
+        "strength cinematic",
     ],
 
     "कृष्ण": [
-
-        "krishna statue",
+        "krishna statue cinematic",
         "flute cinematic",
         "vrindavan temple",
-        "peacock feather",
-        "spiritual india",
         "river cinematic",
-        "bhagavad gita art",
+        "peacock feather macro",
     ],
 
     "महाभारत": [
-
-        "epic war",
-        "battle cinematic",
-        "ancient warriors",
-        "indian mythology",
+        "epic war cinematic",
         "battlefield drone",
-        "cinematic fire",
+        "ancient warriors",
+        "war smoke cinematic",
     ],
-
-    "रावण": [
-
-        "dark king cinematic",
-        "epic fire",
-        "ancient warrior",
-        "cinematic night",
-        "fantasy fort",
-    ],
-
-    "शनि": [
-
-        "dark temple",
-        "space cinematic",
-        "stars cinematic",
-        "meditation dark",
-        "slow motion temple",
-    ],
-
-    "लक्ष्मी": [
-
-        "gold temple",
-        "festival india",
-        "spiritual woman cinematic",
-        "diwali cinematic",
-        "wealth aesthetic",
-    ]
 }
-
-# ---------------------------------------------------
-# DEFAULT QUERIES
-# ---------------------------------------------------
 
 DEFAULT_QUERIES = [
 
-    "ancient india",
-    "cinematic temple",
-    "indian spirituality",
+    "ancient india cinematic",
+    "hindu temple drone",
     "epic cinematic",
-    "indian mythology",
-    "hindu temple",
-    "spiritual cinematic",
-    "india drone",
+    "spiritual india",
+    "mythology cinematic",
+]
+
+BAD_KEYWORDS = [
+
+    "wedding",
+    "dance",
+    "fashion",
+    "food",
+    "party",
+    "travel vlog",
 ]
 
 # ---------------------------------------------------
-# EXTRACT QUERIES FROM SCRIPT
+# CLEAN QUERY
+# ---------------------------------------------------
+
+def clean_query(query):
+
+    query = query.strip().lower()
+
+    query = re.sub(
+        r"\s+",
+        " ",
+        query
+    )
+
+    return query
+
+# ---------------------------------------------------
+# GET VISUAL QUERIES
 # ---------------------------------------------------
 
 def get_visual_queries(script_text):
 
     queries = []
 
+    script_text = script_text.lower()
+
     for keyword, visuals in VISUAL_MAPPINGS.items():
 
-        if keyword in script_text:
+        if keyword.lower() in script_text:
 
             queries.extend(visuals)
 
     if not queries:
+        queries = DEFAULT_QUERIES.copy()
 
-        queries = DEFAULT_QUERIES
+    queries.extend(DEFAULT_QUERIES)
+
+    queries = list(set(queries))
 
     random.shuffle(queries)
 
-    return queries[:5]
+    return queries[:8]
+
+# ---------------------------------------------------
+# FILTER BAD VIDEOS
+# ---------------------------------------------------
+
+def is_bad_video(video):
+
+    try:
+
+        user = str(
+            video.get("user", {})
+            .get("name", "")
+        ).lower()
+
+        url = str(
+            video.get("url", "")
+        ).lower()
+
+        combined = f"{user} {url}"
+
+        for word in BAD_KEYWORDS:
+
+            if word in combined:
+                return True
+
+        return False
+
+    except:
+        return False
 
 # ---------------------------------------------------
 # DOWNLOAD VIDEO
@@ -155,7 +162,7 @@ def download_video(url, output_path):
     response = requests.get(
         url,
         stream=True,
-        timeout=60
+        timeout=120
     )
 
     with open(output_path, "wb") as f:
@@ -168,6 +175,60 @@ def download_video(url, output_path):
                 f.write(chunk)
 
 # ---------------------------------------------------
+# GET BEST FILE
+# ---------------------------------------------------
+
+def get_best_video_file(video_files):
+
+    vertical_hd = []
+    vertical = []
+    horizontal_hd = []
+
+    for vf in video_files:
+
+        width = vf.get("width", 0)
+        height = vf.get("height", 0)
+
+        quality = vf.get("quality", "")
+
+        link = vf.get("link")
+
+        if not link:
+            continue
+
+        ratio = height / max(width, 1)
+
+        if ratio >= 1.6:
+
+            if height >= 1280 and quality == "hd":
+                vertical_hd.append(vf)
+            else:
+                vertical.append(vf)
+
+        elif quality == "hd":
+
+            horizontal_hd.append(vf)
+
+    for collection in [
+
+        vertical_hd,
+        vertical,
+        horizontal_hd
+
+    ]:
+
+        if collection:
+
+            collection.sort(
+                key=lambda x: x.get("height", 0),
+                reverse=True
+            )
+
+            return collection[0]["link"]
+
+    return None
+
+# ---------------------------------------------------
 # FETCH FOOTAGE
 # ---------------------------------------------------
 
@@ -175,9 +236,11 @@ def fetch_footage(script_text):
 
     print("\nFetching cinematic footage...")
 
-    os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
+    os.makedirs(
+        DOWNLOAD_FOLDER,
+        exist_ok=True
+    )
 
-    # Clear old clips
     for file in os.listdir(DOWNLOAD_FOLDER):
 
         path = os.path.join(
@@ -188,9 +251,7 @@ def fetch_footage(script_text):
         if os.path.isfile(path):
             os.remove(path)
 
-    queries = get_visual_queries(
-        script_text
-    )
+    queries = get_visual_queries(script_text)
 
     downloaded = 0
 
@@ -198,12 +259,15 @@ def fetch_footage(script_text):
 
         try:
 
+            query = clean_query(query)
+
             print(f"\nSearching: {query}")
 
             url = (
                 "https://api.pexels.com/videos/search"
                 f"?query={query}"
-                "&per_page=15"
+                "&per_page=20"
+                "&orientation=portrait"
             )
 
             response = requests.get(
@@ -230,6 +294,9 @@ def fetch_footage(script_text):
                     if video_id in USED_VIDEO_IDS:
                         continue
 
+                    if is_bad_video(video):
+                        continue
+
                     USED_VIDEO_IDS.add(video_id)
 
                     duration = video.get(
@@ -237,44 +304,15 @@ def fetch_footage(script_text):
                         0
                     )
 
-                    if duration < 5:
+                    if duration < 5 or duration > 25:
                         continue
 
-                    best_file = None
-
-                    for vf in video.get(
-                        "video_files",
-                        []
-                    ):
-
-                        width = vf.get("width", 0)
-                        height = vf.get("height", 0)
-
-                        quality = vf.get(
-                            "quality",
-                            ""
-                        )
-
-                        # Prefer vertical HD
-                        if (
-                            height > width
-                            and height >= 1280
-                            and quality == "hd"
-                        ):
-
-                            best_file = vf["link"]
-                            break
-
-                    # fallback
-                    if not best_file:
-
-                        files = video.get(
+                    best_file = get_best_video_file(
+                        video.get(
                             "video_files",
                             []
                         )
-
-                        if files:
-                            best_file = files[0]["link"]
+                    )
 
                     if not best_file:
                         continue
@@ -292,20 +330,15 @@ def fetch_footage(script_text):
                         output_path
                     )
 
-                    print(
-                        f"Saved: {output_path}"
-                    )
-
                     downloaded += 1
 
-                    # enough clips
-                    if downloaded >= 7:
+                    if downloaded >= 8:
 
                         print(
                             f"\nTotal clips downloaded: {downloaded}"
                         )
 
-                        return
+                        return downloaded
 
                 except Exception as e:
 
@@ -318,3 +351,6 @@ def fetch_footage(script_text):
     print(
         f"\nTotal clips downloaded: {downloaded}"
     )
+
+    return downloaded
+

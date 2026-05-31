@@ -5,21 +5,44 @@ from PIL import Image
 # ---------------------------------------------------
 
 if not hasattr(Image, "ANTIALIAS"):
+
     Image.ANTIALIAS = Image.Resampling.LANCZOS
 
-from moviepy.editor import *
-from moviepy.video.tools.subtitles import SubtitlesClip
+# ---------------------------------------------------
+# IMPORTS
+# ---------------------------------------------------
 
-from scripts.subtitle_generator import generate_subtitles
+from moviepy.editor import *
+
+from moviepy.video.tools.subtitles import (
+    SubtitlesClip
+)
+
+from scripts.subtitle_generator import (
+    generate_subtitles
+)
 
 import os
 import random
 
 # ---------------------------------------------------
-# FONT
+# PATHS
 # ---------------------------------------------------
 
-FONT_PATH = "assets/fonts/NotoSansDevanagari-Regular.ttf"
+FONT_PATH = (
+    "assets/fonts/"
+    "NotoSansDevanagari-Regular.ttf"
+)
+
+FOOTAGE_FOLDER = "assets/footage"
+
+OUTPUT_PATH = (
+    "output/final_short.mp4"
+)
+
+NARRATION_PATH = (
+    "assets/audio/narration.wav"
+)
 
 # ---------------------------------------------------
 # CHOOSE BGM
@@ -27,251 +50,201 @@ FONT_PATH = "assets/fonts/NotoSansDevanagari-Regular.ttf"
 
 def choose_bgm(script_text):
 
-    # Randomly disable BGM sometimes
-    if random.random() < 0.20:
+    # sometimes no bgm
+    if random.random() < 0.15:
+
         return None
 
-    if "कृष्ण" in script_text:
+    mappings = {
 
-        return random.choice([
+        "कृष्ण": [
+
             "assets/music/krishna.mp3",
-            "assets/music/emotional.mp3"
-        ])
+            "assets/music/emotional.mp3",
+        ],
 
-    if "शिव" in script_text:
+        "शिव": [
 
-        return random.choice([
             "assets/music/shiva.mp3",
-            "assets/music/epic.mp3"
-        ])
-
-    if (
-        "युद्ध" in script_text
-        or "महाभारत" in script_text
-        or "रावण" in script_text
-    ):
-
-        return random.choice([
             "assets/music/epic.mp3",
-            "assets/music/suspense.mp3"
-        ])
+        ],
 
-    if (
-        "श्राप" in script_text
-        or "रहस्य" in script_text
-        or "भविष्यवाणी" in script_text
-    ):
+        "महाभारत": [
 
-        return random.choice([
+            "assets/music/epic.mp3",
             "assets/music/suspense.mp3",
-            "assets/music/suspense_2.mp3"
-        ])
+        ],
 
-    return random.choice([
+        "रावण": [
+
+            "assets/music/epic.mp3",
+            "assets/music/dark.mp3",
+        ],
+
+        "हनुमान": [
+
+            "assets/music/epic.mp3",
+            "assets/music/emotional.mp3",
+        ],
+
+        "रहस्य": [
+
+            "assets/music/suspense.mp3",
+            "assets/music/suspense_2.mp3",
+        ],
+
+        "श्राप": [
+
+            "assets/music/dark.mp3",
+            "assets/music/suspense.mp3",
+        ]
+    }
+
+    for keyword, tracks in mappings.items():
+
+        if keyword in script_text:
+
+            available = [
+
+                track
+
+                for track in tracks
+
+                if os.path.exists(track)
+            ]
+
+            if available:
+
+                return random.choice(
+                    available
+                )
+
+    default_tracks = [
+
         "assets/music/emotional.mp3",
         "assets/music/suspense.mp3",
-        "assets/music/epic.mp3"
-    ])
-
-
-# ---------------------------------------------------
-# CREATE VIDEO
-# ---------------------------------------------------
-
-def create_video():
-
-    footage_folder = "assets/footage"
-
-    video_files = [
-
-        f"{footage_folder}/{file}"
-
-        for file in os.listdir(footage_folder)
-
-        if file.endswith(".mp4")
+        "assets/music/epic.mp3",
     ]
 
-    if not video_files:
-        raise Exception("No footage found")
+    available = [
 
-    random.shuffle(video_files)
+        track
 
-    # ---------------------------------------------------
-    # LOAD NARRATION
-    # ---------------------------------------------------
+        for track in default_tracks
 
-    narration = AudioFileClip(
-        "assets/audio/narration.wav"
-    ).volumex(1.0)
+        if os.path.exists(track)
+    ]
 
-    total_audio_duration = narration.duration
+    if available:
 
-    clips = []
-
-    clip_duration = (
-        total_audio_duration / len(video_files)
-    )
-
-    # ---------------------------------------------------
-    # PROCESS VIDEO CLIPS
-    # ---------------------------------------------------
-
-    for file in video_files:
-
-        try:
-
-            clip = VideoFileClip(file)
-
-            # Random clip section
-            if clip.duration > clip_duration:
-
-                start = random.uniform(
-                    0,
-                    clip.duration - clip_duration
-                )
-
-                clip = clip.subclip(
-                    start,
-                    start + clip_duration
-                )
-
-            else:
-
-                clip = clip.loop(
-                    duration=clip_duration
-                )
-
-            # Resize for vertical shorts
-            clip = clip.resize(height=1920)
-
-            if clip.w < 1080:
-
-                clip = clip.resize(width=1080)
-
-            # Crop vertical
-            clip = clip.crop(
-                x_center=clip.w / 2,
-                width=1080,
-                height=1920
-            )
-
-            # Smooth fades
-            clip = (
-                clip
-                .fadein(0.3)
-                .fadeout(0.3)
-            )
-
-            clips.append(clip)
-
-        except Exception as e:
-
-            print(f"\nError processing: {file}")
-            print(e)
-
-    # ---------------------------------------------------
-    # COMBINE CLIPS
-    # ---------------------------------------------------
-
-    final_video = concatenate_videoclips(
-        clips,
-        method="compose"
-    )
-
-    final_video = final_video.set_duration(
-        narration.duration
-    )
-
-    # ---------------------------------------------------
-    # LOAD SCRIPT
-    # ---------------------------------------------------
-
-    with open(
-        "script.txt",
-        "r",
-        encoding="utf-8"
-    ) as f:
-
-        script_text = f.read()
-
-    # ---------------------------------------------------
-    # SELECT BGM
-    # ---------------------------------------------------
-
-    bgm_path = choose_bgm(script_text)
-
-    if (
-        bgm_path
-        and os.path.exists(bgm_path)
-    ):
-
-        print(f"\nUsing BGM: {bgm_path}")
-
-        bgm = AudioFileClip(
-            bgm_path
-        ).volumex(0.03)
-
-        bgm = bgm.audio_loop(
-            duration=narration.duration
+        return random.choice(
+            available
         )
 
-        final_audio = CompositeAudioClip([
-            bgm,
-            narration
-        ])
+    return None
+
+# ---------------------------------------------------
+# PROCESS CLIP
+# ---------------------------------------------------
+
+def process_clip(
+
+    file_path,
+
+    target_duration
+):
+
+    clip = VideoFileClip(file_path)
+
+    # ---------------------------------------------------
+    # RANDOM SECTION
+    # ---------------------------------------------------
+
+    if clip.duration > target_duration:
+
+        start = random.uniform(
+
+            0,
+
+            max(
+                clip.duration
+                - target_duration,
+                0
+            )
+        )
+
+        clip = clip.subclip(
+
+            start,
+
+            start + target_duration
+        )
 
     else:
 
-        print("\nNo BGM selected")
-
-        final_audio = narration
-
-    # Set final audio
-    final_video = final_video.set_audio(
-        final_audio
-    )
-
-    # ---------------------------------------------------
-    # GENERATE SUBTITLES
-    # ---------------------------------------------------
-
-    print("\nGenerating subtitles...")
-
-    subtitle_segments = generate_subtitles(
-    narration.duration
-    )
-
-    subtitles = []
-
-    for segment in subtitle_segments:
-
-        start = segment["start"]
-        end = segment["end"]
-        text = segment["text"]
-
-        subtitles.append(
-            (
-                (start, end),
-                text
-            )
+        clip = clip.loop(
+            duration=target_duration
         )
 
-    print("\nSample subtitles:")
-    print(subtitles[:3])
-
     # ---------------------------------------------------
-    # SUBTITLE STYLE
+    # RESIZE
     # ---------------------------------------------------
 
+    clip = clip.resize(height=1920)
+
+    if clip.w < 1080:
+
+        clip = clip.resize(width=1080)
+
     # ---------------------------------------------------
-    # SUBTITLE STYLE
+    # CROP
     # ---------------------------------------------------
 
-    generator = lambda txt: TextClip(
+    clip = clip.crop(
+
+        x_center=clip.w / 2,
+
+        width=1080,
+
+        height=1920
+    )
+
+    # ---------------------------------------------------
+    # EFFECTS
+    # ---------------------------------------------------
+
+    clip = (
+
+        clip
+
+        .fadein(0.25)
+
+        .fadeout(0.25)
+    )
+
+    # subtle zoom
+    zoom = random.uniform(
+        1.02,
+        1.08
+    )
+
+    clip = clip.resize(
+        lambda t: zoom
+    )
+
+    return clip
+
+# ---------------------------------------------------
+# SUBTITLE GENERATOR
+# ---------------------------------------------------
+
+def subtitle_generator(txt):
+
+    return TextClip(
 
         txt,
 
-        fontsize=80,
+        fontsize=78,
 
         font=FONT_PATH,
 
@@ -285,33 +258,253 @@ def create_video():
 
         align="center",
 
-        size=(950, None)
+        size=(920, None)
+    )
+
+# ---------------------------------------------------
+# CREATE VIDEO
+# ---------------------------------------------------
+
+def create_video():
+
+    print("\nCreating final video...")
+
+    # ---------------------------------------------------
+    # LOAD FOOTAGE
+    # ---------------------------------------------------
+
+    if not os.path.exists(
+        FOOTAGE_FOLDER
+    ):
+
+        raise Exception(
+            "Footage folder missing"
+        )
+
+    video_files = [
+
+        os.path.join(
+            FOOTAGE_FOLDER,
+            file
+        )
+
+        for file in os.listdir(
+            FOOTAGE_FOLDER
+        )
+
+        if file.endswith(".mp4")
+    ]
+
+    if not video_files:
+
+        raise Exception(
+            "No footage found"
+        )
+
+    random.shuffle(video_files)
+
+    # ---------------------------------------------------
+    # LOAD NARRATION
+    # ---------------------------------------------------
+
+    if not os.path.exists(
+        NARRATION_PATH
+    ):
+
+        raise Exception(
+            "Narration file missing"
+        )
+
+    narration = AudioFileClip(
+        NARRATION_PATH
+    ).volumex(1.0)
+
+    total_audio_duration = (
+        narration.duration
+    )
+
+    print(
+        f"Narration duration: "
+        f"{round(total_audio_duration, 2)} sec"
     )
 
     # ---------------------------------------------------
-    # CREATE SUBTITLE CLIPS
+    # PROCESS CLIPS
+    # ---------------------------------------------------
+
+    clips = []
+
+    clip_duration = (
+
+        total_audio_duration
+        / len(video_files)
+    )
+
+    for file in video_files:
+
+        try:
+
+            print(
+                f"Processing: {os.path.basename(file)}"
+            )
+
+            clip = process_clip(
+
+                file,
+
+                clip_duration
+            )
+
+            clips.append(clip)
+
+        except Exception as e:
+
+            print(
+                f"\nError with {file}"
+            )
+
+            print(e)
+
+    if not clips:
+
+        raise Exception(
+            "No usable clips found"
+        )
+
+    # ---------------------------------------------------
+    # COMBINE VIDEO
+    # ---------------------------------------------------
+
+    final_video = concatenate_videoclips(
+
+        clips,
+
+        method="compose"
+    )
+
+    final_video = final_video.set_duration(
+        narration.duration
+    )
+
+    # ---------------------------------------------------
+    # LOAD SCRIPT
+    # ---------------------------------------------------
+
+    with open(
+
+        "script.txt",
+
+        "r",
+
+        encoding="utf-8"
+
+    ) as f:
+
+        script_text = f.read()
+
+    # ---------------------------------------------------
+    # BACKGROUND MUSIC
+    # ---------------------------------------------------
+
+    bgm_path = choose_bgm(
+        script_text
+    )
+
+    if bgm_path:
+
+        print(
+            f"\nUsing BGM:\n{bgm_path}"
+        )
+
+        bgm = AudioFileClip(
+            bgm_path
+        )
+
+        bgm = bgm.volumex(0.05)
+
+        bgm = afx.audio_loop(
+
+            bgm,
+
+            duration=narration.duration
+        )
+
+        final_audio = CompositeAudioClip([
+
+            bgm,
+
+            narration
+        ])
+
+    else:
+
+        print("\nNo BGM selected")
+
+        final_audio = narration
+
+    final_video = final_video.set_audio(
+        final_audio
+    )
+
+    # ---------------------------------------------------
+    # GENERATE SUBTITLES
+    # ---------------------------------------------------
+
+    print("\nGenerating subtitles...")
+
+    subtitle_segments = generate_subtitles(
+        narration.duration
+    )
+
+    subtitles = []
+
+    for segment in subtitle_segments:
+
+        subtitles.append(
+
+            (
+
+                (
+                    segment["start"],
+                    segment["end"]
+                ),
+
+                segment["text"]
+            )
+        )
+
+    print("\nSubtitle count:")
+    print(len(subtitles))
+
+    # ---------------------------------------------------
+    # SUBTITLE CLIPS
     # ---------------------------------------------------
 
     subtitle_clips = SubtitlesClip(
-    subtitles,
-    generator
+
+        subtitles,
+
+        subtitle_generator
     )
 
     subtitle_clips = subtitle_clips.set_position(
-    ("center", 1400)
+
+        ("center", 1450)
     )
 
     # ---------------------------------------------------
-    # OVERLAY SUBTITLES
+    # OVERLAY
     # ---------------------------------------------------
 
     final_video = CompositeVideoClip([
+
         final_video,
+
         subtitle_clips
     ])
 
     # ---------------------------------------------------
-    # EXPORT VIDEO
+    # EXPORT
     # ---------------------------------------------------
 
     os.makedirs(
@@ -319,9 +512,11 @@ def create_video():
         exist_ok=True
     )
 
+    print("\nExporting video...")
+
     final_video.write_videofile(
 
-        "output/final_short.mp4",
+        OUTPUT_PATH,
 
         codec="libx264",
 
@@ -335,9 +530,23 @@ def create_video():
 
         threads=4,
 
-        preset="medium"
+        preset="medium",
+
+        bitrate="6000k"
     )
 
     print(
         "\nFinal video exported successfully!"
     )
+
+    print(
+        f"\nSaved to:\n{OUTPUT_PATH}"
+    )
+
+# ---------------------------------------------------
+# TEST
+# ---------------------------------------------------
+
+if __name__ == "__main__":
+
+    create_video()
