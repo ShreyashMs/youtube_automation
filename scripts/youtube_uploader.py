@@ -28,7 +28,10 @@ from googleapiclient.http import (
 # ---------------------------------------------------
 
 SCOPES = [
-    "https://www.googleapis.com/auth/youtube.upload"
+
+    "https://www.googleapis.com/auth/youtube.upload",
+
+    "https://www.googleapis.com/auth/youtube.force-ssl"
 ]
 
 TOKEN_FILE = "token.pickle"

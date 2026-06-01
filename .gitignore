@@ -32,6 +32,7 @@ dist/
 .ipynb_checkpoints/client_secret.json
 token.pickle
 *.onnx
+client_secret.json
 
 # Generated output and temporary media
 output/
