@@ -97,6 +97,43 @@ def extract_keywords(script):
             "#Shani",
             "#शनिदेव",
         ],
+        "कर्ण": [
+            "#कर्ण",
+            "#Karna",
+            "#Mahabharat",
+            "#Suryaputra",
+        ],
+
+        "अर्जुन": [
+            "#अर्जुन",
+            "#Arjun",
+            "#Mahabharat",
+            "#Pandav",
+        ],
+
+        "भीष्म": [
+            "#भीष्म",
+            "#Bhishma",
+            "#Mahabharat",
+        ],
+
+        "द्रौपदी": [
+            "#द्रौपदी",
+            "#Draupadi",
+            "#Mahabharat",
+        ],
+
+        "अभिमन्यु": [
+            "#अभिमन्यु",
+            "#Abhimanyu",
+            "#Chakravyuh",
+        ],
+
+        "परशुराम": [
+            "#Parshuram",
+            "#परशुराम",
+            "#VishnuAvatar",
+        ],
     }
 
     for key, values in mappings.items():

@@ -36,7 +36,55 @@ VISUAL_MAP = {
         "dark king cinematic",
         "epic fire cinematic",
         "fantasy fort",
-    ]
+    ],
+    "कर्ण": [
+    "epic warrior cinematic",
+    "sunrise warrior",
+    "ancient battlefield",
+    "royal warrior armor",
+    ],
+
+    "अर्जुन": [
+        "archer cinematic",
+        "warrior with bow",
+        "battlefield cinematic",
+        "epic arrow slow motion",
+    ],
+
+    "भीष्म": [
+        "old warrior cinematic",
+        "epic battlefield",
+        "ancient india war",
+        "warrior meditation",
+    ],
+
+    "द्रौपदी": [
+        "queen cinematic",
+        "ancient palace india",
+        "royal woman silhouette",
+        "epic palace cinematic",
+    ],
+
+    "अभिमन्यु": [
+        "young warrior cinematic",
+        "battlefield smoke",
+        "epic warrior",
+        "war cinematic",
+    ],
+
+    "परशुराम": [
+        "axe warrior cinematic",
+        "forest warrior",
+        "epic sage cinematic",
+        "ancient warrior",
+    ],
+
+    "रावण": [
+        "dark king cinematic",
+        "fire cinematic",
+        "epic villain",
+        "dark temple cinematic",
+    ],
 }
 
 DEFAULT_VISUALS = [
