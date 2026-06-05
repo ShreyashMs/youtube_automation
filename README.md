@@ -1,17 +1,23 @@
 # 🚀 YouTube Automation Project
 
-AI-powered YouTube Shorts automation pipeline built with Python.
+AI-powered YouTube Shorts automation pipeline built with Python. Automatically generates Hindi scripts, creates narration, fetches stock footage, edits videos, and uploads directly to YouTube with analytics tracking.
 
 ---
 
 ## ✨ Features
 
-- 🤖 AI script generation
-- 🗣️ Hindi voice generation using Piper TTS
-- 🎥 Automatic stock footage fetching
-- 📱 Vertical Shorts rendering (1080x1920)
-- ☁️ Direct YouTube uploads
-- ⚡ Fully automated pipeline
+- 🤖 **AI Script Generation** - OpenAI-powered script creation with topic categories
+- 🗣️ **Hindi Voice Generation** - Piper TTS for natural Hindi narration
+- 🎥 **Stock Footage Fetching** - Automatic video clip acquisition
+- 📱 **Vertical Shorts Rendering** - Optimized 1080x1920 format for YouTube Shorts
+- ☁️ **Direct YouTube Uploads** - Automated video publishing with metadata
+- 🎨 **AI Thumbnails** - Auto-generated custom thumbnails
+- 💬 **Auto Comments** - Generate and post engaging comments on videos
+- 📝 **Subtitles** - Support for subtitle generation
+- 📊 **Analytics Tracking** - Save video metadata and performance data
+- ⏰ **Upload Scheduling** - Schedule videos for future publishing
+- 🏷️ **Metadata Generation** - Auto-generate titles and descriptions
+- ⚡ **Fully Automated Pipeline** - End-to-end automation from script to upload
 
 ---
 
@@ -19,12 +25,14 @@ AI-powered YouTube Shorts automation pipeline built with Python.
 
 | Technology | Usage |
 |---|---|
-| Python | Core backend |
-| MoviePy | Video editing |
-| FFmpeg | Video processing |
-| Piper TTS | Hindi narration |
-| OpenAI API | AI script generation |
-| YouTube Data API v3 | Video uploads |
+| Python 3.10+ | Core backend |
+| MoviePy | Video editing & composition |
+| FFmpeg | Video processing & encoding |
+| Piper TTS | Hindi voice synthesis |
+| OpenAI API | AI script & comment generation |
+| YouTube Data API v3 | Video uploads & publishing |
+| Pillow | Image processing & thumbnails |
+| Requests | HTTP client for API calls |
 
 ---
 
@@ -36,30 +44,47 @@ Youtube_Automation/
 ├── assets/
 │   ├── audio/
 │   │   └── narration.wav
-│   │
-│   └── footage/
-│       ├── clip1.mp4
-│       ├── clip2.mp4
-│       └── ...
-│
-├── models/
-│   ├── hi_IN-rohan-medium.onnx
-│   └── hi_IN-rohan-medium.onnx.json
+│   ├── fonts/
+│   ├── footage/
+│   │   └── (downloaded video clips)
+│   ├── images/
+│   ├── models/
+│   │   ├── hi_IN-rohan-medium.onnx
+│   │   └── hi_IN-rohan-medium.onnx.json
+│   ├── music/
+│   └── subtitles/
 │
 ├── output/
 │   ├── final_short.mp4
-│   └── final_fixed.mp4
+│   ├── final_fixed.mp4
+│   └── thumbnail.jpg
 │
 ├── scripts/
-│   ├── editor.py
-│   ├── fetch_footage.py
-│   ├── script_generator.py
-│   ├── tts_generator.py
-│   └── youtube_uploader.py
+│   ├── analytics_tracker.py          # Save video analytics & metadata
+│   ├── comment_generator.py          # Generate AI-powered comments
+│   ├── config.py                     # Configuration settings
+│   ├── content_patterns.py           # Content pattern definitions
+│   ├── editor.py                     # MoviePy video editing logic
+│   ├── fetch_footage.py              # Download stock footage
+│   ├── logger.py                     # Logging utilities
+│   ├── metadata_generator.py         # Generate titles & descriptions
+│   ├── scheduler.py                  # Schedule video uploads
+│   ├── script_generator.py           # Generate scripts via OpenAI
+│   ├── subtitle_generator.py         # Create subtitle files
+│   ├── thumbnail_generator.py        # Create video thumbnails
+│   ├── topic_categories.py           # Topic category definitions
+│   ├── topic_engine.py               # Topic management engine
+│   ├── tts_generator.py              # Piper TTS voice generation
+│   ├── visual_prompt_generator.py    # Generate visual descriptions
+│   └── youtube_uploader.py           # YouTube API upload handler
 │
-├── main.py
-├── script.txt
-├── raw_script.txt
+├── main.py                           # Main pipeline orchestrator
+├── requirements.txt                  # Python dependencies
+├── script.txt                        # Generated script output
+├── raw_script.txt                    # Raw script before processing
+├── video_metadata.txt                # Video metadata cache
+├── analytics.json                    # Video analytics data
+├── client_secret.json                # YouTube API credentials
 ├── README.md
 └── .gitignore
 ```
@@ -71,7 +96,7 @@ Youtube_Automation/
 - Python 3.10+
 - FFmpeg
 - Piper TTS
-- Google YouTube API credentials
+- Google YouTube API credentials (OAuth 2.0)
 
 ---
 
@@ -80,8 +105,7 @@ Youtube_Automation/
 ## 1️⃣ Clone Repository
 
 ```bash
-git clone <your-repo-url>
-
+git clone https://github.com/ShreyashMs/youtube_automation.git
 cd Youtube_Automation
 ```
 
@@ -90,7 +114,7 @@ cd Youtube_Automation
 ## 2️⃣ Create Virtual Environment
 
 ```bash
-python -m venv venv
+python3 -m venv venv
 ```
 
 ### Activate Environment
@@ -115,205 +139,305 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-If requirements file does not exist:
+### Dependencies Included:
 
-```bash
-pip install moviepy pillow requests openai google-auth-oauthlib google-api-python-client piper-tts
-```
+- moviepy (1.0.3)
+- pillow
+- requests
+- python-dotenv
+- google-auth-oauthlib
+- google-api-python-client
+- google-auth-httplib2
+- numpy
+- imageio & imageio-ffmpeg
+- proglog, decorator, tqdm
 
 ---
 
 # 🎬 Install FFmpeg
 
-## Mac
+## Mac (Homebrew)
 
 ```bash
-brew install ffmpeg
-```
-
-If brew is not installed:
-
-```bash
+# Install Homebrew if not already installed
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
 
-Then:
-
-```bash
+# Add Homebrew to PATH
 echo 'eval "$(/opt/homebrew/bin/brew shellenv zsh)"' >> ~/.zprofile
-
 eval "$(/opt/homebrew/bin/brew shellenv zsh)"
-```
 
-Restart terminal and run:
-
-```bash
+# Install FFmpeg
 brew install ffmpeg
+
+# Verify installation
+ffmpeg -version
 ```
 
-Verify installation:
+## Linux (Ubuntu/Debian)
 
 ```bash
+sudo apt-get update
+sudo apt-get install ffmpeg
 ffmpeg -version
+```
+
+## Windows
+
+Download from: https://ffmpeg.org/download.html or use:
+
+```bash
+choco install ffmpeg
 ```
 
 ---
 
-# 🗣️ Setup Piper Hindi Voice
+# 🗣️ Setup Piper Hindi Voice Model
 
-Create models folder:
+### Step 1: Create Models Directory
 
 ```bash
-mkdir models
+mkdir -p models
 ```
 
-Download model:
+### Step 2: Download ONNX Model
 
 ```bash
 curl -L -o models/hi_IN-rohan-medium.onnx \
 https://huggingface.co/rhasspy/piper-voices/resolve/main/hi/hi_IN/rohan/medium/hi_IN-rohan-medium.onnx
 ```
 
-Download config:
+### Step 3: Download Model Config
 
 ```bash
 curl -L -o models/hi_IN-rohan-medium.onnx.json \
 https://huggingface.co/rhasspy/piper-voices/resolve/main/hi/hi_IN/rohan/medium/hi_IN-rohan-medium.onnx.json
 ```
 
----
-
-# 🔑 Setup YouTube API
-
-## 1️⃣ Open Google Cloud Console
-
-Enable:
-
-- YouTube Data API v3
-
----
-
-## 2️⃣ Create OAuth Credentials
-
-Create:
-
-- OAuth Client ID
-- Application Type → Desktop App
-
-Download credentials JSON and rename it:
+### Verify Files
 
 ```bash
-client_secret.json
+ls -la models/
+# Should show both .onnx and .onnx.json files
 ```
-
-Place it in project root.
 
 ---
 
-# 🔐 Authenticate YouTube Upload Access
+# 🔑 Setup YouTube API & Authentication
 
-Create:
+## Step 1: Create Google Cloud Project
 
-```python
-from google_auth_oauthlib.flow import InstalledAppFlow
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project
+3. Enable **YouTube Data API v3**
 
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+## Step 2: Create OAuth Credentials
 
-flow = InstalledAppFlow.from_client_secrets_file(
-    "client_secret.json",
-    SCOPES
-)
+1. Go to **Credentials** → **Create Credentials**
+2. Select **OAuth Client ID**
+3. Choose **Desktop Application**
+4. Download the credentials JSON file
 
-credentials = flow.run_local_server(port=8080)
+## Step 3: Setup Credentials
 
-print("Authentication Successful")
-```
-
-Run:
-
-```bash
-python test_auth.py
-```
-
-Browser will open for authentication.
-
-After successful login:
+1. Rename downloaded file to `client_secret.json`
+2. Place it in the project root directory:
 
 ```bash
-token.pickle
+Youtube_Automation/
+├── client_secret.json
+├── main.py
+└── ...
 ```
 
-will be generated automatically.
+## Step 4: Authenticate
 
----
-
-# ▶️ Run Project
+First run will prompt browser authentication:
 
 ```bash
 python main.py
 ```
 
+After login, `token.pickle` will be generated automatically for future runs.
+
+---
+
+# 🔐 Setup Environment Variables
+
+Create a `.env` file in the project root:
+
+```bash
+OPENAI_API_KEY=your_openai_key_here
+```
+
+---
+
+# ▶️ Run the Complete Pipeline
+
+```bash
+python main.py
+```
+
+### What Happens:
+
+1. 📝 Generates AI script
+2. 🏷️ Creates title & description
+3. 🎨 Generates thumbnail
+4. 🎬 Fetches stock footage
+5. 🗣️ Creates Hindi voice narration
+6. 🎥 Edits and renders final video
+7. 📤 Uploads to YouTube
+8. 💬 Posts auto-generated comment
+9. 📊 Saves analytics data
+
 ---
 
 # 🔄 Pipeline Workflow
 
-```text
-AI Script
-   ↓
-Hindi Voice
-   ↓
-Stock Footage
-   ↓
-MoviePy Editing
-   ↓
-Final Short
-   ↓
-YouTube Upload
+```
+┌─────────────────────┐
+│  Generate Script    │ (OpenAI API)
+└──────────┬──────────┘
+           ↓
+┌─────────────────────┐
+│ Generate Metadata   │ (Titles & Descriptions)
+└──────────┬──────────┘
+           ↓
+┌─────────────────────┐
+│Generate Thumbnail   │ (AI-powered design)
+└──────────┬──────────┘
+           ↓
+┌─────────────────────┐
+│  Fetch Stock        │ (Download video clips)
+│   Footage           │
+└──────────┬──────────┘
+           ↓
+┌─────────────────────┐
+│ Generate Voice      │ (Piper TTS - Hindi)
+└──────────┬──────────┘
+           ↓
+┌─────────────────────┐
+│  Create Video       │ (MoviePy editing)
+└──────────┬──────────┘
+           ↓
+┌─────────────────────┐
+│ Upload to YouTube   │ (YouTube Data API)
+└──────────┬──────────┘
+           ↓
+┌─────────────────────┐
+│Post Auto Comment    │ (AI-generated)
+└──────────┬──────────┘
+           ↓
+┌─────────────────────┐
+│Save Analytics       │ (Track metadata)
+└─────────────────────┘
 ```
 
 ---
 
 # 📦 Output Files
 
-### Generated Videos
+After running the pipeline, check these output locations:
 
-```bash
-output/final_short.mp4
-```
-
-### Final Fixed Version
-
-```bash
-output/final_fixed.mp4
-```
-
-### Narration Audio
-
-```bash
-assets/audio/narration.wav
-```
+| File | Location | Purpose |
+|------|----------|---------|
+| Final Video | `output/final_short.mp4` | Ready-to-upload Shorts video |
+| Thumbnail | `output/thumbnail.jpg` | Video thumbnail image |
+| Audio | `assets/audio/narration.wav` | Hindi voice narration |
+| Script | `script.txt` | Generated script text |
+| Metadata | `video_metadata.txt` | Title, description, tags |
+| Analytics | `analytics.json` | Video upload data & metrics |
 
 ---
 
-# 🐛 Common Errors
+# 🎯 Core Modules
 
-## 1️⃣ ffmpeg command not found
+## `script_generator.py`
+Generates engaging scripts using OpenAI API with topic-based content patterns.
+
+## `metadata_generator.py`
+Creates titles and descriptions optimized for YouTube SEO.
+
+## `tts_generator.py`
+Converts text to Hindi speech using Piper TTS engine.
+
+## `fetch_footage.py`
+Downloads stock video clips from multiple sources based on script content.
+
+## `editor.py`
+Uses MoviePy to compose final video with clips, audio, text overlays, and effects.
+
+## `thumbnail_generator.py`
+Generates custom thumbnails with text and imagery.
+
+## `youtube_uploader.py`
+Handles YouTube API authentication and video publishing.
+
+## `comment_generator.py`
+Generates and posts engaging comments on uploaded videos.
+
+## `analytics_tracker.py`
+Saves video metadata and tracks performance metrics.
+
+## `subtitle_generator.py`
+Creates subtitle files for accessibility.
+
+## `scheduler.py`
+Schedules videos for future publishing.
+
+---
+
+# 🐛 Troubleshooting
+
+## 1️⃣ FFmpeg Command Not Found
 
 ```bash
+# Mac
 brew install ffmpeg
-```
 
-Verify:
+# Linux
+sudo apt-get install ffmpeg
 
-```bash
+# Verify
 ffmpeg -version
 ```
 
 ---
 
-## 2️⃣ No Sound in Video
+## 2️⃣ YouTube Authentication Failed
+
+- Delete `token.pickle` if it exists
+- Re-run `python main.py` to re-authenticate
+- Ensure `client_secret.json` is in project root
+- Check if YouTube API is enabled in Google Cloud Console
+
+---
+
+## 3️⃣ Piper Model Not Found
+
+Ensure these files exist:
 
 ```bash
+models/hi_IN-rohan-medium.onnx
+models/hi_IN-rohan-medium.onnx.json
+```
+
+If missing, re-download them:
+
+```bash
+mkdir -p models
+curl -L -o models/hi_IN-rohan-medium.onnx \
+https://huggingface.co/rhasspy/piper-voices/resolve/main/hi/hi_IN/rohan/medium/hi_IN-rohan-medium.onnx
+
+curl -L -o models/hi_IN-rohan-medium.onnx.json \
+https://huggingface.co/rhasspy/piper-voices/resolve/main/hi/hi_IN/rohan/medium/hi_IN-rohan-medium.onnx.json
+```
+
+---
+
+## 4️⃣ No Sound in Video
+
+```bash
+# Re-merge audio with video using FFmpeg
 ffmpeg -i output/final_short.mp4 \
 -i assets/audio/narration.wav \
 -c:v copy \
@@ -324,49 +448,91 @@ output/final_fixed.mp4
 
 ---
 
-## 3️⃣ Piper Model Not Found
+## 5️⃣ YouTube Upload Quota Exceeded
 
-Ensure these files exist:
-
-```bash
-models/hi_IN-rohan-medium.onnx
-
-models/hi_IN-rohan-medium.onnx.json
 ```
+Error: Quota exceeded for Video Uploads per day
+```
+
+**Solutions:**
+- Wait 24 hours for quota to reset
+- Create a new Google Cloud project with fresh quotas
+- Upgrade to Google Cloud paid account for higher limits
 
 ---
 
-## 4️⃣ YouTube Upload Quota Exceeded
+## 6️⃣ OpenAI API Key Missing
 
-### Error
+Create `.env` file:
 
-```text
-Quota exceeded for Video Uploads per day
+```bash
+OPENAI_API_KEY=your_key_here
 ```
 
-### Fix
-
-- Wait 24 hours
-- Or create a new Google Cloud project
+Get your key from: https://platform.openai.com/api-keys
 
 ---
 
 # 🔮 Future Improvements
 
-- 🎯 Auto subtitles
-- 🖼️ AI thumbnails
-- 🎵 Background music
-- 🌎 Multi-language support
-- 🔥 Trending topic scraping
-- 🏷️ Auto hashtags
-- 📅 Upload scheduling
-- 📈 SEO optimization
-- 👥 Multiple YouTube channels
+- 🎯 Advanced subtitle styling
+- 🖼️ Multi-language thumbnail generation
+- 🎵 Automatic background music mixing
+- 🌎 Multi-language script generation
+- 🔥 Real-time trending topic scraping
+- 🏷️ Automatic hashtag optimization
+- 📅 Advanced upload scheduling
+- 📈 SEO optimization engine
+- 👥 Multi-channel management
+- 📊 Real-time analytics dashboard
+- 🤖 Feedback loop for content improvement
+- ⚡ Batch video processing
 
+---
 
+# 📝 Configuration
+
+Edit `scripts/config.py` to customize:
+
+- Video dimensions (1080x1920)
+- Footage duration ranges
+- Font sizes and styles
+- Audio quality
+- API endpoints
+- Content categories
+
+---
+
+# 🤝 Contributing
+
+Feel free to fork, modify, and improve this project!
+
+---
+
+# ⚠️ Legal Notice
+
+- Ensure you have rights to all content used
+- Respect copyright laws for stock footage
+- Follow YouTube Community Guidelines
+- Obtain necessary API permissions
+- Comply with local broadcasting regulations
+
+---
+
+# 📄 License
+
+This project is provided as-is for educational and personal use.
 
 ---
 
 # 👨‍💻 Author
 
 Built with ❤️ by **ShreyashMs**
+
+For questions or issues, open an issue on GitHub.
+
+---
+
+**Last Updated:** June 2026
+**Python Version:** 3.10+
+**Status:** ✅ Active Development
