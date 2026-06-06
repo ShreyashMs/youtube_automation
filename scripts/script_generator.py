@@ -76,9 +76,9 @@ def build_prompt(topic):
 - पूरी स्क्रिप्ट शुद्ध हिंदी में हो
 - cinematic narration हो
 - suspense बना रहे
-- narration voiceover जैसा लगे
+- narration voiceover जैसा लगे 
 - fake बातें मत लिखो
-- emojis मत लिखो
+- emojis and music or any commands मत लिखो
 - hashtags मत लिखो
 - headings मत लिखो
 - 120 से 150 शब्द लिखो

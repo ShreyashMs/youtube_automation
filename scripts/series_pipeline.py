@@ -41,6 +41,10 @@ from analytics_tracker import (
     save_video_data
 )
 
+from playlist_config import (
+    get_playlist_id
+)
+
 # ---------------------------------------------------
 # PATHS
 # ---------------------------------------------------
@@ -281,13 +285,17 @@ def run_series_pipeline():
 
     print("\nUploading video...\n")
 
+    playlist_id = get_playlist_id(series_name)
+
     upload_result = upload_video(
 
         title=title,
 
         description=description,
 
-        video_path=VIDEO_OUTPUT
+        video_path=VIDEO_OUTPUT,
+
+        playlist_id=playlist_id
     )
 
     if not upload_result:

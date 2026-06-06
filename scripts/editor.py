@@ -18,7 +18,7 @@ from moviepy.video.tools.subtitles import (
     SubtitlesClip
 )
 
-from subtitle_generator import (
+from .subtitle_generator import (
     generate_subtitles
 )
 

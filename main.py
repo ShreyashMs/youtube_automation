@@ -25,6 +25,10 @@ upload_video,
 post_comment
 )
 
+from scripts.playlist_config import (
+get_playlist_id
+)
+
 # ---------------------------------------------------
 
 # OPTIONAL SERIES PIPELINE
@@ -32,17 +36,11 @@ post_comment
 # ---------------------------------------------------
 
 try:
-
-
-from scripts.series_pipeline import (
-    get_next_episode
-)
-
-
+    from scripts.content_loader import (
+        get_next_episode
+    )
 except:
-
-
-get_next_episode = None
+    get_next_episode = None
 
 
 # ---------------------------------------------------
@@ -54,11 +52,11 @@ get_next_episode = None
 """
 AVAILABLE MODES:
 
-ai_story
-series
+ai_story (generates AI stories - uploads to shorts playlist)
+series (use series_pipeline.py instead for Bhagavad Gita)
 """
 
-CONTENT_MODE = "series"
+CONTENT_MODE = "ai_story"
 
 # ---------------------------------------------------
 
@@ -79,17 +77,15 @@ THUMBNAIL_OUTPUT = "output/thumbnail.jpg"
 # ---------------------------------------------------
 
 def clean_text(text):
+    if not text:
+        return ""
 
-
-if not text:
-    return ""
-
-return (
-    text.replace("**", "")
-    .replace('"', "")
-    .replace("“", "")
-    .replace("”", "")
-    .strip()
+    return (
+        text.replace("**", "")
+        .replace('"', "")
+        .replace(""", "")
+        .replace(""", "")
+        .strip()
 )
 
 
@@ -100,11 +96,8 @@ return (
 # ---------------------------------------------------
 
 def verify_file(path, message):
-
-
-if not os.path.exists(path):
-
-    raise FileNotFoundError(message)
+    if not os.path.exists(path):
+        raise FileNotFoundError(message)
 
 
 # ---------------------------------------------------
@@ -115,82 +108,81 @@ if not os.path.exists(path):
 
 def load_content():
 
+    # ---------------------------------------------------
+    # SERIES PIPELINE
+    # ---------------------------------------------------
 
-# ---------------------------------------------------
-# SERIES PIPELINE
-# ---------------------------------------------------
+    if CONTENT_MODE == "series":
 
-if CONTENT_MODE == "series":
+        if not get_next_episode:
 
-    if not get_next_episode:
+            raise Exception(
+                "series_pipeline.py missing"
+            )
 
-        raise Exception(
-            "series_pipeline.py missing"
-        )
+        print("\nLoading series episode...\n")
 
-    print("\nLoading series episode...\n")
+        data = get_next_episode()
 
-    data = get_next_episode()
+        return {
+
+            "script": data.get(
+                "script",
+                ""
+            ),
+
+            "title": data.get(
+                "title",
+                ""
+            ),
+
+            "topic": data.get(
+                "title",
+                ""
+            ),
+
+            "content_type": "series",
+
+            "series": data.get(
+                "series",
+                "unknown_series"
+            ),
+
+            "chapter": data.get(
+                "chapter",
+                0
+            ),
+
+            "episode": data.get(
+                "episode",
+                0
+            )
+        }
+
+    # ---------------------------------------------------
+    # AI STORY PIPELINE
+    # ---------------------------------------------------
+
+    print("\nGenerating AI story...\n")
+
+    script = generate_script()
 
     return {
 
-        "script": data.get(
-            "script",
-            ""
-        ),
+        "script": script,
 
-        "title": data.get(
-            "title",
-            ""
-        ),
+        "title": None,
 
-        "topic": data.get(
-            "title",
-            ""
-        ),
+        "topic": script[:40],
 
-        "content_type": "series",
+        "content_type": "ai_story",
 
-        "series": data.get(
-            "series",
-            "unknown_series"
-        ),
+        "series": None,
 
-        "chapter": data.get(
-            "chapter",
-            0
-        ),
+        "chapter": None,
 
-        "episode": data.get(
-            "episode",
-            0
-        )
+        "episode": None
     }
-
-# ---------------------------------------------------
-# AI STORY PIPELINE
-# ---------------------------------------------------
-
-print("\nGenerating AI story...\n")
-
-script = generate_script()
-
-return {
-
-    "script": script,
-
-    "title": None,
-
-    "topic": script[:40],
-
-    "content_type": "ai_story",
-
-    "series": None,
-
-    "chapter": None,
-
-    "episode": None
-}
 
 
 # ---------------------------------------------------
@@ -201,264 +193,275 @@ return {
 
 def run_pipeline():
 
+    print("\n" + "=" * 60)
+    print("STARTING AUTOMATED SHORTS PIPELINE")
+    print("=" * 60)
 
-print("\n" + "=" * 60)
-print("STARTING AUTOMATED SHORTS PIPELINE")
-print("=" * 60)
+    start_time = datetime.now()
 
-start_time = datetime.now()
+    # ---------------------------------------------------
+    # LOAD CONTENT
+    # ---------------------------------------------------
 
-# ---------------------------------------------------
-# LOAD CONTENT
-# ---------------------------------------------------
+    content = load_content()
 
-content = load_content()
+    script = content["script"]
 
-script = content["script"]
+    if not script:
 
-if not script:
-
-    raise ValueError(
-        "Script generation failed"
-    )
-
-# ---------------------------------------------------
-# SAVE SCRIPT
-# ---------------------------------------------------
-
-with open(
-
-    SCRIPT_PATH,
-
-    "w",
-
-    encoding="utf-8"
-
-) as f:
-
-    f.write(script)
-
-verify_file(
-
-    SCRIPT_PATH,
-
-    "script.txt missing"
-)
-
-print("\nScript loaded successfully!")
-
-# ---------------------------------------------------
-# GENERATE METADATA
-# ---------------------------------------------------
-
-print("\nGenerating metadata...\n")
-
-# ---------------------------------------------------
-# SERIES CONTENT
-# ---------------------------------------------------
-
-if content["content_type"] == "series":
-
-    title = clean_text(
-        content["title"]
-    )
-
-    metadata = generate_metadata(
-        script
-    )
-
-    description = clean_text(
-
-        metadata.get(
-
-            "description",
-
-            "पूरी श्रृंखला प्लेलिस्ट में देखें।"
+        raise ValueError(
+            "Script generation failed"
         )
+
+    # ---------------------------------------------------
+    # SAVE SCRIPT
+    # ---------------------------------------------------
+
+    with open(
+
+        SCRIPT_PATH,
+
+        "w",
+
+        encoding="utf-8"
+
+    ) as f:
+
+        f.write(script)
+
+    verify_file(
+
+        SCRIPT_PATH,
+
+        "script.txt missing"
     )
 
-    full_description = description
+    print("\nScript loaded successfully!")
 
-# ---------------------------------------------------
-# AI STORY CONTENT
-# ---------------------------------------------------
+    # ---------------------------------------------------
+    # GENERATE METADATA
+    # ---------------------------------------------------
 
-else:
+    print("\nGenerating metadata...\n")
 
-    metadata = generate_metadata(
-        script
-    )
+    # ---------------------------------------------------
+    # SERIES CONTENT
+    # ---------------------------------------------------
 
-    title = clean_text(
+    if content["content_type"] == "series":
 
-        metadata.get(
-
-            "title",
-
-            "पौराणिक रहस्य"
+        title = clean_text(
+            content["title"]
         )
-    )
 
-    description = clean_text(
-
-        metadata.get(
-
-            "description",
-
-            "ऐसी और दिव्य कथाओं के लिए Subscribe करें।"
+        metadata = generate_metadata(
+            script
         )
+
+        description = clean_text(
+
+            metadata.get(
+
+                "description",
+
+                "पूरी श्रृंखला प्लेलिस्ट में देखें।"
+            )
+        )
+
+        full_description = description
+
+    # ---------------------------------------------------
+    # AI STORY CONTENT
+    # ---------------------------------------------------
+
+    else:
+
+        metadata = generate_metadata(
+            script
+        )
+
+        title = clean_text(
+
+            metadata.get(
+
+                "title",
+
+                "पौराणिक रहस्य"
+            )
+        )
+
+        description = clean_text(
+
+            metadata.get(
+
+                "description",
+
+                "ऐसी और दिव्य कथाओं के लिए Subscribe करें।"
+            )
+        )
+
+        full_description = description
+
+    print("\nTITLE:\n")
+    print(title)
+
+    print("\nDESCRIPTION:\n")
+    print(full_description)
+
+    # ---------------------------------------------------
+    # THUMBNAIL
+    # ---------------------------------------------------
+
+    print("\nGenerating thumbnail...\n")
+
+    create_thumbnail(title)
+
+    verify_file(
+
+        THUMBNAIL_OUTPUT,
+
+        "Thumbnail missing"
     )
 
-    full_description = description
+    print("\nThumbnail created successfully!")
 
-print("\nTITLE:\n")
-print(title)
+    # ---------------------------------------------------
+    # FETCH FOOTAGE
+    # ---------------------------------------------------
 
-print("\nDESCRIPTION:\n")
-print(full_description)
+    print("\nFetching footage...\n")
 
-# ---------------------------------------------------
-# THUMBNAIL
-# ---------------------------------------------------
+    footage_count = fetch_footage(script)
 
-print("\nGenerating thumbnail...\n")
+    if footage_count < 3:
 
-create_thumbnail(title)
+        raise Exception(
+            "Not enough footage downloaded"
+        )
 
-verify_file(
-
-    THUMBNAIL_OUTPUT,
-
-    "Thumbnail missing"
-)
-
-print("\nThumbnail created successfully!")
-
-# ---------------------------------------------------
-# FETCH FOOTAGE
-# ---------------------------------------------------
-
-print("\nFetching footage...\n")
-
-footage_count = fetch_footage(script)
-
-if footage_count < 3:
-
-    raise Exception(
-        "Not enough footage downloaded"
+    print(
+        f"\nDownloaded {footage_count} clips"
     )
 
-print(
-    f"\nDownloaded {footage_count} clips"
-)
+    # ---------------------------------------------------
+    # GENERATE VOICE
+    # ---------------------------------------------------
 
-# ---------------------------------------------------
-# GENERATE VOICE
-# ---------------------------------------------------
+    print("\nGenerating voice...\n")
 
-print("\nGenerating voice...\n")
+    generate_voice()
 
-generate_voice()
+    verify_file(
 
-verify_file(
+        "assets/audio/narration.wav",
 
-    "assets/audio/narration.wav",
+        "Narration missing"
+    )
 
-    "Narration missing"
-)
+    print("\nVoice generated successfully!")
 
-print("\nVoice generated successfully!")
+    # ---------------------------------------------------
+    # CREATE VIDEO
+    # ---------------------------------------------------
 
-# ---------------------------------------------------
-# CREATE VIDEO
-# ---------------------------------------------------
+    print("\nCreating final video...\n")
 
-print("\nCreating final video...\n")
+    create_video()
 
-create_video()
+    verify_file(
 
-verify_file(
+        VIDEO_OUTPUT,
 
-    VIDEO_OUTPUT,
+        "Final video missing"
+    )
 
-    "Final video missing"
-)
+    print(
+        "\nFinal video created successfully!"
+    )
 
-print(
-    "\nFinal video created successfully!"
-)
+    # ---------------------------------------------------
+    # UPLOAD TO YOUTUBE
+    # ---------------------------------------------------
 
-# ---------------------------------------------------
-# UPLOAD TO YOUTUBE
-# ---------------------------------------------------
+    print("\nUploading to YouTube...\n")
 
-print("\nUploading to YouTube...\n")
+    # Determine playlist based on content type
+    if content["content_type"] == "series":
 
-upload_result = upload_video(
+        playlist_id = get_playlist_id(content["series"])
 
-    title=title,
+    else:
 
-    description=full_description,
+        # AI stories go to the shorts playlist
+        playlist_id = get_playlist_id("ai_story")
 
-    video_path=VIDEO_OUTPUT
-)
+    upload_result = upload_video(
 
-print("\nVideo uploaded successfully!")
+        title=title,
 
-# ---------------------------------------------------
-# GENERATE COMMENT
-# ---------------------------------------------------
+        description=full_description,
 
-print("\nGenerating comment...\n")
+        video_path=VIDEO_OUTPUT,
 
-comment = generate_comment(script)
+        playlist_id=playlist_id
+    )
 
-# ---------------------------------------------------
-# POST COMMENT
-# ---------------------------------------------------
+    print("\nVideo uploaded successfully!")
 
-print("\nPosting comment...\n")
+    # ---------------------------------------------------
+    # GENERATE COMMENT
+    # ---------------------------------------------------
 
-post_comment(
+    print("\nGenerating comment...\n")
 
-    video_id=upload_result["video_id"],
+    comment = generate_comment(script)
 
-    comment_text=comment
-)
+    # ---------------------------------------------------
+    # POST COMMENT
+    # ---------------------------------------------------
 
-# ---------------------------------------------------
-# SAVE ANALYTICS
-# ---------------------------------------------------
+    print("\nPosting comment...\n")
 
-save_video_data(
+    post_comment(
 
-    title=title,
+        video_id=upload_result["video_id"],
 
-    topic=content["topic"],
+        comment_text=comment
+    )
 
-    video_id=upload_result["video_id"],
+    # ---------------------------------------------------
+    # SAVE ANALYTICS
+    # ---------------------------------------------------
 
-    video_url=upload_result["video_url"]
-)
+    save_video_data(
 
-print("\nAnalytics saved!")
+        title=title,
 
-# ---------------------------------------------------
-# FINISH
-# ---------------------------------------------------
+        topic=content["topic"],
 
-end_time = datetime.now()
+        video_id=upload_result["video_id"],
 
-total_time = (
-    end_time - start_time
-).total_seconds()
+        video_url=upload_result["video_url"]
+    )
 
-print("\n" + "=" * 60)
-print("PIPELINE COMPLETED")
-print(
-    f"TOTAL TIME: {round(total_time, 2)} seconds"
-)
-print("=" * 60)
+    print("\nAnalytics saved!")
+
+    # ---------------------------------------------------
+    # FINISH
+    # ---------------------------------------------------
+
+    end_time = datetime.now()
+
+    total_time = (
+        end_time - start_time
+    ).total_seconds()
+
+    print("\n" + "=" * 60)
+    print("PIPELINE COMPLETED")
+    print(
+        f"TOTAL TIME: {round(total_time, 2)} seconds"
+    )
+    print("=" * 60)
 
 
 # ---------------------------------------------------
@@ -467,21 +470,20 @@ print("=" * 60)
 
 # ---------------------------------------------------
 
-if **name** == "**main**":
+if __name__ == "__main__":
 
+    try:
 
-try:
+        run_pipeline()
 
-    run_pipeline()
+    except KeyboardInterrupt:
 
-except KeyboardInterrupt:
+        print("\nPipeline stopped manually.")
 
-    print("\nPipeline stopped manually.")
+    except Exception as e:
 
-except Exception as e:
+        print("\nPIPELINE FAILED")
+        print(e)
 
-    print("\nPIPELINE FAILED")
-    print(e)
-
-    traceback.print_exc()
+        traceback.print_exc()
 

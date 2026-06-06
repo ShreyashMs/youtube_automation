@@ -131,6 +131,54 @@ def authenticate_youtube():
     return youtube
 
 # ---------------------------------------------------
+# ADD VIDEO TO PLAYLIST
+# ---------------------------------------------------
+
+def add_video_to_playlist(
+
+    video_id,
+
+    playlist_id
+):
+
+    try:
+
+        youtube = authenticate_youtube()
+
+        youtube.playlistItems().insert(
+
+            part="snippet",
+
+            body={
+
+                "snippet": {
+
+                    "playlistId": playlist_id,
+
+                    "resourceId": {
+
+                        "kind": "youtube#video",
+
+                        "videoId": video_id
+                    }
+                }
+            }
+
+        ).execute()
+
+        print(
+            f"\nVideo added to playlist: {playlist_id}"
+        )
+
+        return True
+
+    except HttpError as e:
+
+        print(f"\nError adding video to playlist: {e}")
+
+        return False
+
+# ---------------------------------------------------
 # UPLOAD VIDEO
 # ---------------------------------------------------
 
@@ -142,7 +190,9 @@ def upload_video(
 
     video_path=DEFAULT_VIDEO_PATH,
 
-    tags=None
+    tags=None,
+
+    playlist_id=None
 ):
 
     if not os.path.exists(video_path):
@@ -223,6 +273,16 @@ def upload_video(
     print("\nUPLOAD SUCCESSFUL")
 
     print(video_url)
+
+    # Add to playlist if playlist_id provided
+    if playlist_id:
+
+        add_video_to_playlist(
+
+            video_id,
+
+            playlist_id
+        )
 
     return {
 
