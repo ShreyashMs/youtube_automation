@@ -161,7 +161,17 @@ def run_series_pipeline():
         )
     )
 
+    cta = clean_text(
+        episode.get(
+            "cta",
+            ""
+        )
+    )
+
     full_script = f"{hook}\n\n{script}"
+    
+    if cta:
+        full_script += f"\n\n{cta}"
 
     # ---------------------------------------------------
     # SAVE SCRIPT
