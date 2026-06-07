@@ -18,9 +18,14 @@ from moviepy.video.tools.subtitles import (
     SubtitlesClip
 )
 
-from .subtitle_generator import (
-    generate_subtitles
-)
+try:
+    from .subtitle_generator import (
+        generate_subtitles
+    )
+except ImportError:
+    from subtitle_generator import (
+        generate_subtitles
+    )
 
 import os
 import random
