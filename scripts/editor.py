@@ -53,7 +53,19 @@ NARRATION_PATH = (
 # CHOOSE BGM
 # ---------------------------------------------------
 
-def choose_bgm(script_text):
+def choose_bgm(script_text, emotion=None):
+
+    emotion_tracks = {
+        "peaceful": ["assets/music/krishna.mp3", "assets/music/emotional.mp3"],
+        "emotional": ["assets/music/emotional.mp3"],
+        "mysterious": ["assets/music/suspense.mp3", "assets/music/suspense_2.mp3"],
+        "intense": ["assets/music/epic.mp3", "assets/music/suspense.mp3"],
+        "devotional": ["assets/music/krishna.mp3", "assets/music/shiva.mp3"],
+    }
+    if emotion in emotion_tracks:
+        available = [track for track in emotion_tracks[emotion] if os.path.exists(track)]
+        if available:
+            return random.choice(available)
 
     # sometimes no bgm
     if random.random() < 0.15:
@@ -243,21 +255,22 @@ def process_clip(
 # SUBTITLE GENERATOR
 # ---------------------------------------------------
 
-def subtitle_generator(txt):
+def subtitle_generator(txt, style=None):
+    style = style or {}
 
     return TextClip(
 
         txt,
 
-        fontsize=78,
+        fontsize=style.get("font_size", 78),
 
         font=FONT_PATH,
 
-        color="white",
+        color=style.get("color", "white"),
 
-        stroke_color="black",
+        stroke_color=style.get("stroke_color", "black"),
 
-        stroke_width=5,
+        stroke_width=style.get("stroke_width", 5),
 
         method="caption",
 
@@ -270,9 +283,10 @@ def subtitle_generator(txt):
 # CREATE VIDEO
 # ---------------------------------------------------
 
-def create_video():
+def create_video(render_settings=None):
 
     print("\nCreating final video...")
+    render_settings = render_settings or {}
 
     # ---------------------------------------------------
     # LOAD FOOTAGE
@@ -411,9 +425,18 @@ def create_video():
     # BACKGROUND MUSIC
     # ---------------------------------------------------
 
-    bgm_path = choose_bgm(
-        script_text
-    )
+    music_settings = render_settings.get("music", {})
+    if music_settings is None:
+        music_settings = {"enabled": False}
+    if music_settings.get("enabled") is False:
+        bgm_path = None
+    else:
+        bgm_path = music_settings.get("file") or choose_bgm(
+            script_text,
+            render_settings.get("emotion"),
+        )
+    if bgm_path and not os.path.exists(bgm_path):
+        raise FileNotFoundError(f"Configured music file not found: {bgm_path}")
 
     if bgm_path:
 
@@ -425,7 +448,7 @@ def create_video():
             bgm_path
         )
 
-        bgm = bgm.volumex(0.05)
+        bgm = bgm.volumex(float(music_settings.get("volume", 0.05)))
 
         bgm = afx.audio_loop(
 
@@ -455,17 +478,23 @@ def create_video():
     # GENERATE SUBTITLES
     # ---------------------------------------------------
 
-    print("\nGenerating subtitles...")
+    subtitle_settings = render_settings.get("subtitles", {"enabled": True})
+    if subtitle_settings is None:
+        subtitle_settings = {"enabled": False}
+    if subtitle_settings.get("enabled") is False:
+        subtitle_settings = {"enabled": False}
+    else:
+        print("\nGenerating subtitles...")
 
-    subtitle_segments = generate_subtitles(
-        narration.duration
-    )
+        subtitle_segments = generate_subtitles(
+            narration.duration
+        )
 
-    subtitles = []
+        subtitles = []
 
-    for segment in subtitle_segments:
+        for segment in subtitle_segments:
 
-        subtitles.append(
+            subtitles.append(
 
             (
 
@@ -476,37 +505,37 @@ def create_video():
 
                 segment["text"]
             )
-        )
+            )
 
-    print("\nSubtitle count:")
-    print(len(subtitles))
+        print("\nSubtitle count:")
+        print(len(subtitles))
 
     # ---------------------------------------------------
     # SUBTITLE CLIPS
     # ---------------------------------------------------
 
-    subtitle_clips = SubtitlesClip(
+        subtitle_clips = SubtitlesClip(
 
-        subtitles,
+            subtitles,
 
-        subtitle_generator
-    )
+            lambda text: subtitle_generator(text, subtitle_settings)
+        )
 
-    subtitle_clips = subtitle_clips.set_position(
+        subtitle_clips = subtitle_clips.set_position(
 
-        ("center", 1450)
-    )
+            ("center", subtitle_settings.get("position_y", 1450))
+        )
 
     # ---------------------------------------------------
     # OVERLAY
     # ---------------------------------------------------
 
-    final_video = CompositeVideoClip([
+        final_video = CompositeVideoClip([
 
-        final_video,
+            final_video,
 
-        subtitle_clips
-    ])
+            subtitle_clips
+        ])
 
     # ---------------------------------------------------
     # EXPORT

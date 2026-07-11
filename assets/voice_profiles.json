@@ -1,0 +1,8 @@
+{
+  "default_voice": "hindi_rohan",
+  "voices": {
+    "hindi_rohan": {
+      "model": "assets/models/hi_IN-rohan-medium.onnx"
+    }
+  }
+}

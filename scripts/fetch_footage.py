@@ -2,6 +2,7 @@ import os
 import requests
 import random
 import re
+import json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -13,8 +14,27 @@ HEADERS = {
 }
 
 DOWNLOAD_FOLDER = "assets/footage"
+USED_FOOTAGE_FILE = "data/used_footage.json"
 
 USED_VIDEO_IDS = set()
+
+
+def load_used_video_ids():
+    if not os.path.exists(USED_FOOTAGE_FILE):
+        return set()
+    try:
+        with open(USED_FOOTAGE_FILE, "r", encoding="utf-8") as file:
+            return set(json.load(file).get("video_ids", []))
+    except (OSError, ValueError, TypeError):
+        return set()
+
+
+def save_used_video_ids(video_ids):
+    os.makedirs(os.path.dirname(USED_FOOTAGE_FILE), exist_ok=True)
+    temporary_path = f"{USED_FOOTAGE_FILE}.tmp"
+    with open(temporary_path, "w", encoding="utf-8") as file:
+        json.dump({"video_ids": sorted(video_ids)}, file, indent=2)
+    os.replace(temporary_path, USED_FOOTAGE_FILE)
 
 # ---------------------------------------------------
 # VISUAL MAPPINGS
@@ -149,7 +169,15 @@ def clean_query(query):
 # GET VISUAL QUERIES
 # ---------------------------------------------------
 
-def get_visual_queries(script_text):
+def get_visual_queries(script_text, visual_queries=None):
+    # JSON-supplied prompts take priority. They are intentionally not inferred
+    # from the narration, so the content creator controls every visual intent.
+    if visual_queries:
+        queries = [clean_query(str(query)) for query in visual_queries if str(query).strip()]
+        if not queries:
+            raise ValueError("visual_queries must contain at least one non-empty query")
+        return list(dict.fromkeys(queries))
+
 
     queries = []
 
@@ -280,7 +308,7 @@ def get_best_video_file(video_files):
 # FETCH FOOTAGE
 # ---------------------------------------------------
 
-def fetch_footage(script_text):
+def fetch_footage(script_text, visual_queries=None):
 
     print("\nFetching cinematic footage...")
 
@@ -299,7 +327,8 @@ def fetch_footage(script_text):
         if os.path.isfile(path):
             os.remove(path)
 
-    queries = get_visual_queries(script_text)
+    queries = get_visual_queries(script_text, visual_queries)
+    used_video_ids = load_used_video_ids() | USED_VIDEO_IDS
 
     downloaded = 0
 
@@ -339,13 +368,11 @@ def fetch_footage(script_text):
 
                     video_id = video.get("id")
 
-                    if video_id in USED_VIDEO_IDS:
+                    if video_id in used_video_ids:
                         continue
 
                     if is_bad_video(video):
                         continue
-
-                    USED_VIDEO_IDS.add(video_id)
 
                     duration = video.get(
                         "duration",
@@ -379,6 +406,9 @@ def fetch_footage(script_text):
                     )
 
                     downloaded += 1
+                    used_video_ids.add(video_id)
+                    USED_VIDEO_IDS.add(video_id)
+                    save_used_video_ids(used_video_ids)
 
                     if downloaded >= 8:
 
@@ -401,4 +431,3 @@ def fetch_footage(script_text):
     )
 
     return downloaded
-

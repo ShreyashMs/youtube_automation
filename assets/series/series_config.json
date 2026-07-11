@@ -1,3 +1,16 @@
 {
-  "active_series": "bhagwat_gita"
+  "active_series": "bhagwat_gita",
+  "series": {
+    "bhagwat_gita": {
+      "defaults": {
+        "description": "भगवद गीता के श्लोकों को सरल हिंदी में समझिए। पूरी श्रृंखला के लिए प्लेलिस्ट देखें और RamLala10 को Subscribe करें।",
+        "hashtags": ["#BhagavadGita", "#Geeta", "#Mahabharat", "#Krishna", "#सनातनधर्म", "#गीता", "#YouTubeShorts", "#Shorts", "#RamLala10"],
+        "comment": "जय श्री कृष्ण 🙏\nगीता का यह संदेश आपके मन को शांति दे।\nअगला श्लोक देखने के लिए चैनल को Subscribe करें।"
+      },
+      "visual_themes": {
+        "war": ["ancient battlefield warriors cinematic", "warrior silhouette smoke cinematic", "epic battlefield sunrise cinematic", "ancient war drums cinematic", "armored archer dramatic cinematic", "storm clouds over battlefield cinematic", "ancient fort flags wind cinematic", "horse rider battlefield cinematic"],
+        "krishna": ["krishna temple cinematic", "peacock feather macro cinematic", "flute close up cinematic", "sunrise temple bells cinematic", "river mist spiritual cinematic", "divine golden light cinematic", "ancient chariot wheel cinematic", "peaceful temple corridor cinematic"]
+      }
+    }
+  }
 }
