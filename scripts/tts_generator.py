@@ -3,6 +3,7 @@ import os
 import wave
 import contextlib
 import re
+import json
 
 # ---------------------------------------------------
 # PATHS
@@ -17,6 +18,8 @@ MODEL_PATH = (
     "assets/models/"
     "hi_IN-rohan-medium.onnx"
 )
+
+VOICE_PROFILES_PATH = "assets/voice_profiles.json"
 
 OUTPUT_DIR = "assets/audio"
 
@@ -70,19 +73,33 @@ def get_audio_duration(audio_path):
 # GENERATE VOICE
 # ---------------------------------------------------
 
-def generate_voice():
+def get_voice_profile(voice_name=None):
+    with open(VOICE_PROFILES_PATH, "r", encoding="utf-8") as file:
+        profiles = json.load(file)
+    voice_name = voice_name or profiles.get("default_voice")
+    profile = profiles.get("voices", {}).get(voice_name)
+    if not profile:
+        available = ", ".join(profiles.get("voices", {}).keys()) or "none"
+        raise ValueError(f"Unknown voice '{voice_name}'. Available voices: {available}")
+    return voice_name, profile
+
+
+def generate_voice(voice_name=None):
 
     print("\nGenerating narration...")
 
     # ---------------------------------------------------
-    # CHECK MODEL
+    # LOAD SELECTED VOICE
     # ---------------------------------------------------
 
-    if not os.path.exists(MODEL_PATH):
+    selected_voice, profile = get_voice_profile(voice_name)
+    model_path = profile.get("model", MODEL_PATH)
+
+    if not os.path.exists(model_path):
 
         raise FileNotFoundError(
 
-            f"Piper model not found:\n{MODEL_PATH}"
+            f"Piper model not found for '{selected_voice}':\n{model_path}"
         )
 
     # ---------------------------------------------------
@@ -158,7 +175,7 @@ def generate_voice():
             PIPER_PATH,
 
             "--model",
-            MODEL_PATH,
+            model_path,
 
             "--output_file",
             OUTPUT_PATH
@@ -221,6 +238,8 @@ def generate_voice():
     )
 
     print("\nVoice generated successfully!")
+
+    print(f"Voice: {selected_voice}")
 
     print(
         f"Audio duration: {duration} seconds"

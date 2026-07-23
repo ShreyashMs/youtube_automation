@@ -1,12 +1,12 @@
 # 🚀 YouTube Automation Project
 
-AI-powered YouTube Shorts automation pipeline built with Python. Automatically generates Hindi scripts, creates narration, fetches stock footage, edits videos, and uploads directly to YouTube with analytics tracking.
+JSON-authored YouTube Shorts pipeline built with Python. Each episode supplies its own Hindi script, metadata, hashtags, comment, and visual prompts; the pipeline creates narration, fetches fresh stock footage, renders the video, and uploads it with analytics tracking.
 
 ---
 
 ## ✨ Features
 
-- 🤖 **AI Script Generation** - OpenAI-powered script creation with topic categories
+- 🗂️ **JSON-First Content** - Scripts, metadata, hashtags, comments, and visuals stay in versionable JSON files
 - 🗣️ **Hindi Voice Generation** - Piper TTS for natural Hindi narration
 - 🎥 **Stock Footage Fetching** - Automatic video clip acquisition
 - 📱 **Vertical Shorts Rendering** - Optimized 1080x1920 format for YouTube Shorts
@@ -266,7 +266,7 @@ After login, `token.pickle` will be generated automatically for future runs.
 Create a `.env` file in the project root:
 
 ```bash
-OPENAI_API_KEY=your_openai_key_here
+PEXELS_API_KEY=your_pexels_key_here
 ```
 
 ---
@@ -277,17 +277,22 @@ OPENAI_API_KEY=your_openai_key_here
 python main.py
 ```
 
+### JSON content format
+
+`python main.py` reads the general queue in `assets/content_queue.json`; it does not run the Bhagwat Gita series. Add each new item to that file with its `id`, `title`, `script`, `description`, `hashtags`, `comment`, `visuals`, `emotion`, `music`, `subtitles`, and `voice`.
+
+The pipeline reads no runtime AI-generated script, metadata, comment, or visual prompt. It claims an item before work begins, marks it complete only after a successful YouTube upload, and records Pexels video IDs in `data/used_footage.json` to avoid reusing clips. Completion state is stored in `data/content_queue_progress.json`.
+
+Voice profiles are defined in `assets/voice_profiles.json`. `hindi_rohan` is the only model currently installed. To add another Piper voice, place its `.onnx` and matching `.onnx.json` files under `assets/models/`, add its model path under `voices`, and use that voice name in the queue item.
+
 ### What Happens:
 
-1. 📝 Generates AI script
-2. 🏷️ Creates title & description
-3. 🎨 Generates thumbnail
-4. 🎬 Fetches stock footage
-5. 🗣️ Creates Hindi voice narration
-6. 🎥 Edits and renders final video
-7. 📤 Uploads to YouTube
-8. 💬 Posts auto-generated comment
-9. 📊 Saves analytics data
+1. Loads and claims the next uncompleted JSON queue item
+2. Saves its narration and creates its thumbnail
+3. Fetches new footage using its JSON visual prompts
+4. Creates Hindi narration and renders the Short
+5. Uploads the JSON title, description, hashtags, and comment
+6. Marks the episode complete and saves analytics
 
 ---
 
@@ -295,11 +300,11 @@ python main.py
 
 ```
 ┌─────────────────────┐
-│  Generate Script    │ (OpenAI API)
+│ Load JSON Episode   │
 └──────────┬──────────┘
            ↓
 ┌─────────────────────┐
-│ Generate Metadata   │ (Titles & Descriptions)
+│ JSON Metadata       │ (title, description, hashtags)
 └──────────┬──────────┘
            ↓
 ┌─────────────────────┐
