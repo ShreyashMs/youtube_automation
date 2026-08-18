@@ -78,21 +78,37 @@ def run_series_pipeline():
             raise ValueError("Episode JSON must resolve title, script, description, hashtags, and comment")
 
         print(f"Running JSON episode: {item_id}")
+        print(f"Series: {series_name}")
+        print(f"Title: {title}")
+        
+        # Step tracking for resumable pipelines
+        print("\n[STEP 1/6] Saving script...")
         save_script(script)
         verify_file(SCRIPT_PATH, "script.txt missing")
+        print("✓ Script saved")
 
+        print("[STEP 2/6] Creating thumbnail...")
         create_thumbnail(title)
         verify_file(THUMBNAIL_OUTPUT, "Thumbnail missing")
+        print("✓ Thumbnail created")
 
+        print("[STEP 3/6] Fetching footage...")
         footage_count = fetch_footage(script, episode["visual_queries"])
         if footage_count < 3:
             raise RuntimeError("Not enough new footage downloaded")
+        print(f"✓ Footage fetched ({footage_count} clips)")
 
+        print("[STEP 4/6] Generating voice...")
         generate_voice()
         verify_file("assets/audio/narration.wav", "Narration missing")
+        print("✓ Voice generated")
+        
+        print("[STEP 5/6] Creating video...")
         create_video()
         verify_file(VIDEO_OUTPUT, "Final video missing")
+        print("✓ Video created")
 
+        print("[STEP 6/6] Uploading video...")
         upload_result = upload_video(
             title=title,
             description=description,
@@ -101,6 +117,7 @@ def run_series_pipeline():
         )
         if not upload_result or not upload_result.get("video_id"):
             raise RuntimeError("Upload failed or did not return a video_id")
+        print(f"✓ Video uploaded - ID: {upload_result.get('video_id')}")
 
         # Persist completion immediately after YouTube confirms the upload.
         # Commenting and analytics are helpful follow-up work, but a failure in
@@ -116,9 +133,14 @@ def run_series_pipeline():
             )
         except Exception as follow_up_error:
             print(f"Upload is complete; optional follow-up failed: {follow_up_error}")
+        
         elapsed = (datetime.now() - started_at).total_seconds()
-        print(f"JSON pipeline completed in {elapsed:.1f} seconds.")
-    except BaseException:
+        print(f"\n✓ JSON pipeline completed in {elapsed:.1f} seconds.")
+    except BaseException as e:
+        elapsed = (datetime.now() - started_at).total_seconds()
+        print(f"\n✗ Pipeline interrupted after {elapsed:.1f} seconds")
+        print(f"  Error: {str(e)}")
+        print(f"  Episode {item_id} will resume from the last failed step when pipeline runs again.")
         release_episode_claim(series_name, item_id)
         raise
 
