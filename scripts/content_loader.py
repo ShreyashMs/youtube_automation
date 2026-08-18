@@ -130,7 +130,11 @@ def _resolve_episode(item, settings):
 
 
 def claim_next_episode(series_name=None):
-    """Reserve the next uncompleted item so concurrent runs cannot duplicate it."""
+    """Reserve the next uncompleted item so concurrent runs cannot duplicate it.
+    
+    If an episode is already in progress, it will be resumed automatically.
+    This enables the pipeline to recover from interruptions.
+    """
     series_name = series_name or get_active_series()
     settings = get_series_settings(series_name)
     items = load_series(series_name)
@@ -142,10 +146,21 @@ def claim_next_episode(series_name=None):
 
     active_claim = state.get("in_progress")
     if active_claim:
-        raise RuntimeError(
-            f"Episode {active_claim['episode_id']} is already in progress. "
-            "Finish it or release its claim before starting another run."
-        )
+        # Resume the interrupted episode instead of throwing an error
+        in_progress_id = active_claim['episode_id']
+        claimed_at = active_claim.get('claimed_at', '')
+        
+        # Find the episode in the items list
+        for item in items:
+            if episode_id(item) == in_progress_id:
+                print(f"[RESUME] Resuming interrupted episode: {in_progress_id}")
+                print(f"[RESUME] Episode was claimed at: {claimed_at}")
+                return _resolve_episode(item, settings)
+        
+        # If the episode is no longer in the series, clear the in_progress marker
+        print(f"[WARN] In-progress episode {in_progress_id} not found in series, clearing.")
+        state["in_progress"] = None
+        save_progress(progress)
 
     for item in items:
         item_id = episode_id(item)

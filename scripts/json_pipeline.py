@@ -42,25 +42,40 @@ def run_json_pipeline():
     started_at = datetime.now()
     try:
         print(f"Running JSON queue item: {item_id} ({item.get('emotion', 'neutral')})")
+        print(f"Title: {item['title']}")
+        
+        # Step tracking for resumable pipelines
+        print("\n[STEP 1/6] Saving script...")
         _save_script(item["script"])
         _require_file(SCRIPT_PATH)
+        print("✓ Script saved")
 
+        print("[STEP 2/6] Creating thumbnail...")
         create_thumbnail(item["title"])
         _require_file(THUMBNAIL_OUTPUT)
+        print("✓ Thumbnail created")
 
+        print("[STEP 3/6] Fetching footage...")
         count = fetch_footage(item["script"], item["visuals"])
         if count < 3:
             raise RuntimeError("Not enough new footage downloaded")
+        print(f"✓ Footage fetched ({count} clips)")
 
+        print("[STEP 4/6] Generating voice...")
         generate_voice(item.get("voice"))
         _require_file("assets/audio/narration.wav")
+        print("✓ Voice generated")
+        
+        print("[STEP 5/6] Creating video...")
         create_video({
             "emotion": item.get("emotion", "neutral"),
             "music": item.get("music", {}),
             "subtitles": item.get("subtitles", {"enabled": True}),
         })
         _require_file(VIDEO_OUTPUT)
+        print("✓ Video created")
 
+        print("[STEP 6/6] Uploading video...")
         upload_result = upload_video(
             title=item["title"],
             description=_description(item),
@@ -70,6 +85,7 @@ def run_json_pipeline():
         )
         if not upload_result or not upload_result.get("video_id"):
             raise RuntimeError("Upload failed or did not return a video id")
+        print(f"✓ Video uploaded - ID: {upload_result.get('video_id')}")
 
         # Prevent duplicates as soon as the upload is confirmed.
         mark_uploaded(item_id, upload_result, item)
@@ -79,7 +95,12 @@ def run_json_pipeline():
         except Exception as follow_up_error:
             print(f"Upload is complete; optional follow-up failed: {follow_up_error}")
 
-        print(f"JSON pipeline completed in {(datetime.now() - started_at).total_seconds():.1f} seconds.")
-    except BaseException:
+        elapsed = (datetime.now() - started_at).total_seconds()
+        print(f"\n✓ JSON pipeline completed in {elapsed:.1f} seconds.")
+    except BaseException as e:
+        elapsed = (datetime.now() - started_at).total_seconds()
+        print(f"\n✗ Pipeline interrupted after {elapsed:.1f} seconds")
+        print(f"  Error: {str(e)}")
+        print(f"  Task {item_id} will resume from the last failed step when pipeline runs again.")
         release_claim(item_id)
         raise

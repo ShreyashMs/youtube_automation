@@ -121,6 +121,14 @@ def _validate(item, known_ids, known_titles, known_scripts, known_visuals):
             music["enabled"] = False
 
 
+def _find_item_by_id(items, item_id):
+    """Find an item in the queue by its ID."""
+    for item in items:
+        if _item_id(item) == item_id:
+            return item
+    return None
+
+
 def claim_next_item():
     queue = _load(QUEUE_FILE)
 
@@ -145,11 +153,22 @@ def claim_next_item():
 
     progress = _progress()
 
+    # Check if there's an interrupted task to resume
     if progress.get("in_progress"):
-        raise RuntimeError(
-            f"Queue item {progress['in_progress']['id']} is already in progress. "
-            "Finish it or release its claim before starting another run."
-        )
+        in_progress_id = progress['in_progress']['id']
+        in_progress_item = _find_item_by_id(items, in_progress_id)
+        
+        if in_progress_item:
+            # Resume the interrupted task
+            claimed_at = progress['in_progress'].get('claimed_at', '')
+            print(f"[RESUME] Resuming interrupted task: {in_progress_id}")
+            print(f"[RESUME] Task was claimed at: {claimed_at}")
+            return in_progress_item
+        else:
+            # The item is no longer in the queue, clear the in_progress marker
+            print(f"[WARN] In-progress task {in_progress_id} not found in queue, clearing.")
+            progress["in_progress"] = None
+            _save(PROGRESS_FILE, progress)
 
     completed = progress.get("completed", {})
 
