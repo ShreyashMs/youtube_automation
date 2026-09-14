@@ -5277,15 +5277,8 @@
         "भक्तों को आशीर्वाद देते गणेशजी"
       ],
       "emotion": "रहस्य और आध्यात्मिकता",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "मंद आध्यात्मिक",
+      "subtitles": true,
       "voice": "गंभीर और रहस्यमय"
     },
     {
@@ -5308,15 +5301,8 @@
         "हाथी मुख प्राप्त करते गणेशजी"
       ],
       "emotion": "रहस्य और भावुकता",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "गंभीर आध्यात्मिक",
+      "subtitles": true,
       "voice": "कहानी सुनाने वाला गंभीर स्वर"
     },
     {
@@ -5339,15 +5325,8 @@
         "गणेशजी और परशुराम का सामना"
       ],
       "emotion": "तनाव और रहस्य",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "महाकाव्यात्मक",
+      "subtitles": true,
       "voice": "गंभीर और शक्तिशाली"
     },
     {
@@ -5370,15 +5349,8 @@
         "कुबेर का अहंकार समाप्त होना"
       ],
       "emotion": "आश्चर्य और सीख",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "दिव्य और रहस्यमय",
+      "subtitles": true,
       "voice": "गंभीर और प्रभावशाली"
     },
     {
@@ -5401,15 +5373,8 @@
         "भक्तों द्वारा मंदिर दर्शन"
       ],
       "emotion": "भक्ति और जिज्ञासा",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "भक्तिमय",
+      "subtitles": true,
       "voice": "श्रद्धापूर्ण और गंभीर"
     },
     {
@@ -5432,15 +5397,8 @@
         "जल में विलीन होती मिट्टी की प्रतिमा"
       ],
       "emotion": "भावुक और आध्यात्मिक",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "शांत भक्तिमय",
+      "subtitles": true,
       "voice": "भावुक और गंभीर"
     },
     {
@@ -5463,15 +5421,8 @@
         "भक्ति में नाम स्मरण"
       ],
       "emotion": "आध्यात्मिक जिज्ञासा",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "मंद भक्तिमय",
+      "subtitles": true,
       "voice": "शांत और गंभीर"
     },
     {
@@ -5494,15 +5445,8 @@
         "भगवान शिव द्वारा गणेशजी को पुनर्जीवन"
       ],
       "emotion": "रहस्य और गंभीरता",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "गंभीर आध्यात्मिक",
+      "subtitles": true,
       "voice": "रहस्यमय और गंभीर"
     },
     {
@@ -5525,15 +5469,8 @@
         "अष्टविनायक यात्रा"
       ],
       "emotion": "भक्ति और आश्चर्य",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "भक्तिमय",
+      "subtitles": true,
       "voice": "श्रद्धापूर्ण और प्रभावशाली"
     },
     {
@@ -5556,15 +5493,8 @@
         "भक्तों द्वारा पूजा"
       ],
       "emotion": "जिज्ञासा और रहस्य",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "मंद आध्यात्मिक",
+      "subtitles": true,
       "voice": "शांत और रहस्यमय"
     },
     {
@@ -5587,15 +5517,8 @@
         "आधुनिक गणेश उत्सव"
       ],
       "emotion": "गौरव और इतिहास",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "देशभक्तिपूर्ण",
+      "subtitles": true,
       "voice": "गंभीर और ऐतिहासिक"
     },
     {
@@ -5618,15 +5541,8 @@
         "गणेशजी का दिव्य स्वरूप"
       ],
       "emotion": "भक्ति और जिज्ञासा",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "शांत भक्तिमय",
+      "subtitles": true,
       "voice": "श्रद्धापूर्ण और गंभीर"
     },
     {
@@ -5649,15 +5565,8 @@
         "महाभारत का प्रतीकात्मक दृश्य"
       ],
       "emotion": "रहस्य और ज्ञान",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "महाकाव्यात्मक",
+      "subtitles": true,
       "voice": "गंभीर और ज्ञानपूर्ण"
     },
     {
@@ -5680,15 +5589,8 @@
         "सिंह पर विराजमान दुर्गा माता"
       ],
       "emotion": "शक्ति और रहस्य",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "शक्तिमय आध्यात्मिक",
+      "subtitles": true,
       "voice": "गंभीर और शक्तिशाली"
     },
     {
@@ -5711,15 +5613,8 @@
         "देवी की आराधना"
       ],
       "emotion": "शक्ति और गौरव",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "दिव्य और शक्तिमय",
+      "subtitles": true,
       "voice": "प्रभावशाली और गंभीर"
     },
     {
@@ -5742,15 +5637,8 @@
         "देवी दुर्गा का प्राकट्य"
       ],
       "emotion": "रहस्य और संघर्ष",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "महाकाव्यात्मक",
+      "subtitles": true,
       "voice": "गंभीर और रहस्यमय"
     },
     {
@@ -5773,15 +5661,8 @@
         "महिषासुर के सामने देवी"
       ],
       "emotion": "आश्चर्य और शक्ति",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "शक्तिमय",
+      "subtitles": true,
       "voice": "गंभीर और ऊर्जावान"
     },
     {
@@ -5804,15 +5685,8 @@
         "दुर्गा माता का दिव्य स्वरूप"
       ],
       "emotion": "भक्ति और जिज्ञासा",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "भक्तिमय",
+      "subtitles": true,
       "voice": "श्रद्धापूर्ण और गंभीर"
     },
     {
@@ -5835,15 +5709,8 @@
         "नवरात्रि पूजा"
       ],
       "emotion": "शक्ति और भक्ति",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "दिव्य भक्तिमय",
+      "subtitles": true,
       "voice": "गंभीर और श्रद्धापूर्ण"
     },
     {
@@ -5866,15 +5733,8 @@
         "भक्तों द्वारा देवी आराधना"
       ],
       "emotion": "भय और शक्ति",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "गंभीर आध्यात्मिक",
+      "subtitles": true,
       "voice": "गंभीर और रहस्यमय"
     },
     {
@@ -5897,15 +5757,8 @@
         "नवरात्रि पूजा"
       ],
       "emotion": "रहस्य और भक्ति",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "दिव्य आध्यात्मिक",
+      "subtitles": true,
       "voice": "गंभीर और श्रद्धापूर्ण"
     },
     {
@@ -5928,15 +5781,8 @@
         "प्रकाश से भरता ब्रह्मांड"
       ],
       "emotion": "आश्चर्य और आध्यात्मिकता",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "दिव्य और रहस्यमय",
+      "subtitles": true,
       "voice": "गंभीर और रहस्यमय"
     },
     {
@@ -5959,15 +5805,8 @@
         "नवरात्रि आराधना"
       ],
       "emotion": "ममता और भक्ति",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "शांत भक्तिमय",
+      "subtitles": true,
       "voice": "कोमल और गंभीर"
     },
     {
@@ -5990,15 +5829,8 @@
         "नवरात्रि की आराधना"
       ],
       "emotion": "शांति और भक्ति",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "शांत आध्यात्मिक",
+      "subtitles": true,
       "voice": "शांत और श्रद्धापूर्ण"
     },
     {
@@ -6021,15 +5853,8 @@
         "अर्धनारीश्वर का प्रतीकात्मक स्वरूप"
       ],
       "emotion": "आध्यात्मिक रहस्य",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "दिव्य भक्तिमय",
+      "subtitles": true,
       "voice": "गंभीर और शांत"
     },
     {
@@ -6052,15 +5877,8 @@
         "महिषासुर पर विजय"
       ],
       "emotion": "वीरता और विजय",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "शक्तिमय महाकाव्यात्मक",
+      "subtitles": true,
       "voice": "ऊर्जावान और शक्तिशाली"
     },
     {
@@ -6083,15 +5901,8 @@
         "सिंह पर विराजमान दुर्गा माता"
       ],
       "emotion": "भक्ति और शक्ति",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "दिव्य आध्यात्मिक",
+      "subtitles": true,
       "voice": "गंभीर और प्रभावशाली"
     },
     {
@@ -6114,15 +5925,8 @@
         "शिव और शक्ति का प्रतीक"
       ],
       "emotion": "रहस्य और शक्ति",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "शक्तिमय",
+      "subtitles": true,
       "voice": "गंभीर और शक्तिशाली"
     },
     {
@@ -6145,15 +5949,8 @@
         "महिषासुर के विरुद्ध देवी"
       ],
       "emotion": "आश्चर्य और भक्ति",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "दिव्य महाकाव्यात्मक",
+      "subtitles": true,
       "voice": "गंभीर और रहस्यमय"
     },
     {
@@ -6176,15 +5973,8 @@
         "नवरात्रि की आराधना"
       ],
       "emotion": "भक्ति और शांति",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "शांत भक्तिमय",
+      "subtitles": true,
       "voice": "श्रद्धापूर्ण और गंभीर"
     },
     {
@@ -6207,15 +5997,8 @@
         "हिमालय में साधना"
       ],
       "emotion": "भक्ति और धैर्य",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "शांत आध्यात्मिक",
+      "subtitles": true,
       "voice": "शांत और गंभीर"
     },
     {
@@ -6238,15 +6021,8 @@
         "काली का उग्र स्वरूप"
       ],
       "emotion": "भय और रोमांच",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "गंभीर महाकाव्यात्मक",
+      "subtitles": true,
       "voice": "उग्र और रहस्यमय"
     },
     {
@@ -6269,15 +6045,8 @@
         "देवी की विजय"
       ],
       "emotion": "रोमांच और शक्ति",
-      "music": {
-        "file": "assets/music/krishna.mp3",
-        "volume": 0.05
-      },
-      "subtitles": {
-        "enabled": true,
-        "font_size": 78,
-        "position_y": 1450
-      },
+      "music": "महाकाव्यात्मक",
+      "subtitles": true,
       "voice": "ऊर्जावान और शक्तिशाली"
     }
   ]
